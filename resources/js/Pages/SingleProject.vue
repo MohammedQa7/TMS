@@ -5,11 +5,10 @@
                 <CardContent class="p-4 flex justify-between items-center ">
                     <div class="project-information flex flex-row items-center gap-10 ">
                         <div class="project-name space-y-1">
-                            <Link variant="link" class="p-0">
-                            <a href="" class="text-xs   flex items-center gap-2 transition-all hover:underline">
-                                <ChevronLeft class="w-4 h-4" />
-                                BACK TO PROJECTS
-                            </a>
+                            <Link :href="route('projects')"
+                                class="text-xs flex items-center gap-2 transition-all hover:underline">
+                            <ChevronLeft class="w-4 h-4" />
+                            BACK TO PROJECTS
                             </Link>
                             <h1 class="text-2xl font-bold">
                                 Syncor
@@ -291,7 +290,6 @@
                                                                     </a>
                                                                 </div>
                                                                 <div class="assign-task-user">
-                                                                    <!-- <AddTaskMembersDialog /> -->
                                                                     <Button @click.prevent="toggleTaskInviteDialog"
                                                                         variant="outline" class="size-8 rounded-full">
                                                                         <UserPlus />
@@ -349,11 +347,9 @@ import Card from '@/Components/ui/card/Card.vue';
 import CardContent from '@/Components/ui/card/CardContent.vue';
 import { ScrollArea, ScrollBar } from '@/Components/ui/scroll-area'
 import MainLayout from '@/Layouts/MainLayout.vue';
-import { Link } from '@inertiajs/vue3';
 import { CalendarClock, ChevronLeft, Folders, MessageSquare, UserPlus } from 'lucide-vue-next';
 import draggableComponent from 'vuedraggable';
 import { ref, computed } from 'vue';
-import AddTaskMembersDialog from '@/Components/site/AddTaskMembersDialog.vue';
 import TaskDetailsDialog from '@/Components/site/TaskDetailsDialog.vue';
 import TaskInvitation from '@/Components/site/TaskInvitation.vue';
 import Button from '@/components/ui/button/Button.vue';

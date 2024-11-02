@@ -19,8 +19,11 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->name('dashboard');
 
-Route::get('/projects', function () {
-    return Inertia::render('Project');
+Route::get('/project/single', function () {
+    return Inertia::render('SingleProject');
+})->name('single-project');
+Route::get('/projects/', function () {
+    return Inertia::render('Projects');
 })->name('projects');
 
 Route::middleware('auth')->group(function () {

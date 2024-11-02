@@ -1,7 +1,7 @@
 <template>
 
-    <div class="control-group">
-        <div class="button-group">
+    <div class="control-group ">
+        <div class="button-group flex items-center flex-wrap gap-1">
             <Button variant="outline" @click="editor.chain().focus().toggleBold().run()"
                 :disabled="!editor.can().chain().focus().toggleBold().run()"
                 :class="{ ' bg-muted-foreground': editor.isActive('bold') }">
@@ -13,9 +13,24 @@
                 <Italic class="w-4 h-4" />
             </Button>
 
+            <Button variant="outline" @click="editor.chain().focus().toggleStrike().run()"
+                :disabled="!editor.can().chain().focus().toggleStrike().run()"
+                :class="{ 'bg-muted-foreground': editor.isActive('strike') }">
+                <Strikethrough class="size-4" />
+            </Button>
+            <Button variant="outline" @click="editor.chain().focus().toggleCode().run()"
+                :disabled="!editor.can().chain().focus().toggleCode().run()"
+                :class="{ 'bg-muted-foreground': editor.isActive('code') }">
+                <Code class="size-4" />
+            </Button>
+            <Button variant="outline" @click="editor.chain().focus().toggleBulletList().run()"
+                :class="{ 'bg-muted-foreground': editor.isActive('bulletList') }">
+                <List class="size-4" />
+            </Button>
+
             <Select v-model="heading">
-                <SelectTrigger>
-                    <SelectValue placeholder="Select a heading" />
+                <SelectTrigger class="max-w-52 w-32">
+                    <SelectValue placeholder="heading" />
                     <SelectContent>
                         <SelectGroup>
                             <SelectItem value="paragraph">Paragraph</SelectItem>
@@ -29,44 +44,6 @@
                     </SelectContent>
                 </SelectTrigger>
             </Select>
-            <Button variant="outline" @click="editor.chain().focus().toggleStrike().run()"
-                :disabled="!editor.can().chain().focus().toggleStrike().run()"
-                :class="{ 'bg-muted-foreground': editor.isActive('strike') }">
-                <Strikethrough class="size-4" />
-            </Button>
-            <Button variant="outline" @click="editor.chain().focus().toggleCode().run()"
-                :disabled="!editor.can().chain().focus().toggleCode().run()"
-                :class="{ 'bg-muted-foreground': editor.isActive('code') }">
-                <Code class="size-4" />
-            </Button>
-            <Button variant="outline" @click="editor.chain().focus().toggleHeading({ level: 1 }).run()"
-                :class="{ 'bg-muted-foreground': editor.isActive('heading', { level: 1 }) }">
-                <Heading1 class="size-4" />
-            </Button>
-            <Button variant="outline" @click="editor.chain().focus().toggleHeading({ level: 2 }).run()"
-                :class="{ 'bg-muted-foreground': editor.isActive('heading', { level: 2 }) }">
-                <Heading2 class="size-4" />
-            </Button>
-            <Button variant="outline" @click="editor.chain().focus().toggleHeading({ level: 3 }).run()"
-                :class="{ 'bg-muted-foreground': editor.isActive('heading', { level: 3 }) }">
-                <Heading3 class="size-4" />
-            </Button>
-            <Button variant="outline" @click="editor.chain().focus().toggleHeading({ level: 4 }).run()"
-                :class="{ 'bg-muted-foreground': editor.isActive('heading', { level: 4 }) }">
-                <Heading4 class="size-4" />
-            </Button>
-            <Button variant="outline" @click="editor.chain().focus().toggleHeading({ level: 5 }).run()"
-                :class="{ 'bg-muted-foreground': editor.isActive('heading', { level: 5 }) }">
-                <Heading5 class="size-4" />
-            </Button>
-            <Button variant="outline" @click="editor.chain().focus().toggleHeading({ level: 6 }).run()"
-                :class="{ 'bg-muted-foreground': editor.isActive('heading', { level: 6 }) }">
-                <Heading6 class="size-4" />
-            </Button>
-            <Button variant="outline" @click="editor.chain().focus().toggleBulletList().run()"
-                :class="{ 'bg-muted-foreground': editor.isActive('bulletList') }">
-                <List class="size-4" />
-            </Button>
 
             <Button variant="outline" @click="editor.chain().focus().undo().run()"
                 :disabled="!editor.can().chain().focus().undo().run()">

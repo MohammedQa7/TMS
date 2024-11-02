@@ -8,7 +8,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import Button from '../ui/button/Button.vue';
-import { Ellipsis, EllipsisVertical } from 'lucide-vue-next';
+import { Ellipsis } from 'lucide-vue-next';
 
 </script>
 

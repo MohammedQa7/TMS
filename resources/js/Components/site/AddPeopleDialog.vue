@@ -33,7 +33,6 @@ import {
 } from '@/components/ui/dialog'
 import Button from '../ui/button/Button.vue';
 import { UserPlus } from 'lucide-vue-next';
-import SecondaryButton from 'vendor/laravel/breeze/stubs/inertia-react/resources/js/Components/SecondaryButton';
 
 const propsData = defineProps({
     btnText: null
