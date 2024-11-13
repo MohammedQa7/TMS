@@ -1,21 +1,27 @@
 <template>
-    <aside class="inset-y fixed  left-0 z-20 flex h-full flex-col border-r transition-all"
+    <aside class="inset-y fixed  left-0 z-20 flex h-full flex-col border-r transition-all bg-background"
         :class="{ 'w-52   transition-all': isCollabsed }">
         <div class="border-b p-2">
+            <Link :href="route('dashboard')">
             <Button variant="outline" size="icon" aria-label="Home">
                 <Triangle class="size-5 fill-foreground" />
             </Button>
+            </Link>
+
         </div>
         <nav class="grid gap-1 p-2">
             <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger as-child>
-                        <Button variant="ghost" size="icon" class="rounded-lg bg-muted" aria-label="Playground">
-                            <SquareTerminal class="size-5" />
+                        <Link :href="route('projects.index')">
+                        <Button variant="ghost" size="icon" class="rounded-lg" aria-label="Playground"
+                            :class="{ 'bg-muted': page.component == 'Projects' }">
+                            <Workflow class="size-5" />
                         </Button>
+                        </Link>
                     </TooltipTrigger>
                     <TooltipContent side="right" :side-offset="5">
-                        Playground
+                        Workspace
                     </TooltipContent>
                 </Tooltip>
             </TooltipProvider>
@@ -100,8 +106,10 @@
 <script setup lang="ts">
 import { Button } from '@/Components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/Components/ui/tooltip'
-import { Bird, Book, Bot, Code2, CornerDownLeft, DollarSign, LifeBuoy, Link, Mic, Paperclip, Rabbit, Settings, Settings2, Share, SquareTerminal, SquareUser, Triangle, Turtle } from 'lucide-vue-next'
+import { Book, Bot, Code2, FolderArchive, LifeBuoy, Projector, Settings2, SquareTerminal, SquareUser, Triangle, Workflow } from 'lucide-vue-next'
 import { ref } from 'vue'
+import { usePage } from '@inertiajs/vue3';
+const page = usePage();
 const isCollabsed = ref(false);
 const ToggleNav = () => {
     isCollabsed.value = !isCollabsed.value;

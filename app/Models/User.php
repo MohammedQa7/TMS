@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use LDAP\ResultEntry;
 
 class User extends Authenticatable
 {
@@ -44,5 +45,41 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+
+    // RELATIONSHIPS
+    function projects()
+    {
+        return $this->belongsToMany(Project::class, 'project_users');
+    }
+
+    function tasks()
+    {
+        return $this->belongsToMany(Task::class, 'task_users');
+    }
+
+    // SCOPES
+
+    function scopegetProjectUsers($query, $project)
+    {
+        return $query->whereHas('projects', function ($query) use ($project) {
+            return $query->where('project_id', $project->id);
+        })
+            ->whereNot('id', auth()->id());
+    }
+
+    function scopegetTaskUsers($query, $task)
+    {
+        return $query->whereHas('tasks', function ($query) use ($task) {
+            return $query->where('task_id', $task->id);
+        })
+            ->whereNot('id', auth()->id());
+    }
+    function scopegetUsersWithoutTasks($query, $task_id)
+    {
+        return $query->whereHas('tasks', function ($query) use ($task_id) {
+            $query->whereNot('task_id', $task_id);
+        });
     }
 }

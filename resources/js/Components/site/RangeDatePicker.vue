@@ -10,8 +10,9 @@ import {
   getLocalTimeZone,
 } from '@internationalized/date'
 import { Calendar as CalendarIcon } from 'lucide-vue-next'
-import { type Ref, ref } from 'vue'
+import { type Ref, ref, watch } from 'vue'
 
+const emit = defineEmits();
 const df = new DateFormatter('en-US', {
   dateStyle: 'medium',
 })
@@ -20,6 +21,17 @@ const value = ref({
   start: null,
   end: null,
 }) as Ref<DateRange>
+
+watch((value), () => {
+  if (value.value.start && value.value.end) {
+    const dates = {
+      startDate: value.value.start.day + '/' + value.value.start.month + '/' + value.value.start.year,
+      endDate: value.value.end.day + '/' + value.value.end.month + '/' + value.value.end.year,
+    }
+    emit('bindDate', dates);
+  }
+
+}, { deep: true })
 </script>
 
 <template>

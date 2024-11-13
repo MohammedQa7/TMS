@@ -1,0 +1,236 @@
+<template>
+    <Toaster :type="toastType" />
+    <Dialog :open="isOpen">
+        <DialogContent :hideCloseButton="true">
+            <DialogHeader>
+                <DialogTitle>Create Task</DialogTitle>
+            </DialogHeader>
+            <!-- Main Content -->
+            <div v-if="taskDialogStore.isLoading" class="loading-indicator flex justify-center items-center">
+                <Loader2 class="size-9 animate-spin text-center" />
+            </div>
+            <form v-if="!taskDialogStore.isLoading" @submit.prevent="addProject" class="space-y-5">
+                <div class="creation-fields space-y-5">
+                    <div class="grid gap-2">
+                        <Label for="subject">Name</Label>
+                        <Input v-model="form.title" id="subject" placeholder="I need help with..." />
+                    </div>
+                    <div class="grid gap-2">
+                        <Label for="description">Description</Label>
+                        <Textarea v-model="form.description" id="description"
+                            placeholder="Please include all information relevant to your issue." />
+                    </div>
+                    <div class="grid grid-cols-4 gap-4">
+                        <div class="grid col-span-2 gap-2">
+                            <Label for="area">Estimated deadline</Label>
+                            <CalendarPickerComponent @bindDate="bindSelectedDate" />
+                        </div>
+
+                        <div class="grid col-span-2 gap-2">
+                            <Label for="area">Priority</Label>
+                            <Popover v-model:open="open">
+                                <PopoverTrigger as-child>
+                                    <Button variant="outline" role="combobox" :aria-expanded="open"
+                                        class="w-[200px] justify-between">
+                                        {{ form.priority ? taskDialogStore.taskPriorites.find((priority) =>
+                                            priority.value ===
+                                            form.priority?.value)?.label :
+                                            'Select framework...' }}
+                                        <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent class="w-[200px] p-0">
+                                    <Command v-model="form.priority">
+                                        <CommandList>
+                                            <CommandEmpty>No results found.</CommandEmpty>
+                                            <CommandGroup>
+                                                <CommandItem v-for="priority in taskDialogStore.taskPriorites"
+                                                    :key="priority.value" :value="priority" @select="open = false"
+                                                    :class="{ 'bg-muted': form.priority.value === priority.value }">
+                                                    <!-- <Check :class="cn(
+                                                        'mr-2 h-4 w-4',
+                                                        form.priority.value === priority.value ? 'opacity-100' : 'opacity-0',
+                                                    )" />
+                                                    {{ priority.label }} -->
+
+                                                    <div class="flex items-start gap-3 text-muted-foreground ">
+                                                        <Flag class="size-5 "
+                                                            :class="appendPriorityClass(priority.value)" />
+                                                        <div class="grid gap-0.5">
+                                                            <p>
+                                                                <span class="font-medium text-foreground">
+                                                                    {{ priority.value }}
+                                                                </span>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </CommandItem>
+                                            </CommandGroup>
+                                        </CommandList>
+                                    </Command>
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                    </div>
+
+                    <div class="grid gap-2">
+                        <Label for="members">Members</Label>
+                        <Popover>
+                            <PopoverTrigger as-child>
+                                <Button variant="outline" size="sm" class=" w-auto justify-between items-center flex">
+                                    <p>+ Assign members </p>
+                                    <div class="flex  justify-center items-center">
+                                        <Badge v-for="(selectedItems, index) in selectedMembers" :key="index"
+                                            variant="ghost" v-if="!isSelectedAboveTwo" class="ms-2">
+                                            {{ selectedItems.name }}</Badge>
+
+                                        <Badge v-else class="ms-2">
+                                            {{ selectedMembers.length }} selected</Badge>
+                                    </div>
+                                </Button>
+                            </PopoverTrigger>
+
+                            <PopoverContent class="p-0 max-w-[460px] w-[460px]" side="bottom">
+                                <Command>
+                                    <CommandInput placeholder="search by name..." />
+                                    <CommandList>
+                                        <CommandEmpty>No results found.</CommandEmpty>
+                                        <CommandGroup>
+                                            <CommandItem v-for="member in taskDialogStore.members" :key="member.name"
+                                                :value="member.name" @select="SelectItems(member)" class="flex justify-between
+                                            items-center" :class="{ 'bg-muted': selectedMembers.includes(member) }">
+                                                <div class="members-details flex items-center gap-2">
+                                                    <img class="rounded-full size-8 object-cover"
+                                                        src="../../../../public/Assets/images/testimage.png" alt="test">
+                                                    <div class="flex flex-col items-start">
+                                                        <span>{{ member.name }}</span>
+                                                        <span class="text-xs text-muted-foreground">{{ member.email }}
+                                                            .
+                                                            Junior Laravel
+                                                            Developer</span>
+                                                    </div>
+                                                </div>
+                                                <Check v-show="selectedMembers.includes(member)" class="size-4" />
+                                            </CommandItem>
+                                        </CommandGroup>
+                                    </CommandList>
+                                </Command>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+
+                </div>
+                <DialogFooter>
+                    <Button type="submit" :disabled="form.processing"> Save changes </Button>
+                </DialogFooter>
+            </form>
+            <DialogClose @click.prevent="CloseDialog"
+                class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+                <X class="w-4 h-4" />
+                <span class="sr-only">Close</span>
+            </DialogClose>
+        </DialogContent>
+    </Dialog>
+</template>
+
+<script setup>
+import {
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog'
+import Button from '../ui/button/Button.vue';
+import { Check, ChevronsUpDown, Flag, Loader2, X } from 'lucide-vue-next';
+import Label from '../ui/label/Label.vue';
+import Textarea from '../ui/textarea/Textarea.vue';
+import Input from '../ui/input/Input.vue';
+import Popover from '../ui/popover/Popover.vue';
+import PopoverTrigger from '../ui/popover/PopoverTrigger.vue';
+import PopoverContent from '../ui/popover/PopoverContent.vue';
+import CommandList from '../ui/command/CommandList.vue';
+import Command from '../ui/command/Command.vue';
+import CommandGroup from '../ui/command/CommandGroup.vue';
+import CommandItem from '../ui/command/CommandItem.vue';
+import { closeDialog } from '@/Composable/closeDialog';
+import { Toaster } from '../ui/toast';
+import { useToast } from '../ui/toast';
+import { ref, onMounted, computed } from 'vue';
+import { useForm } from '@inertiajs/vue3';
+import CalendarPickerComponent from './CalendarPickerComponent.vue';
+import { DialogClose } from 'radix-vue';
+import { appendPriorityClass } from '@/Composable/taskPriorities';
+import CommandInput from '../ui/command/CommandInput.vue';
+import CommandEmpty from '../ui/command/CommandEmpty.vue';
+import Badge from '../ui/badge/Badge.vue';
+import { useTaskDialogStore } from '@/store/TaskDialogStore';
+const taskDialogStore = useTaskDialogStore();
+const { toast } = useToast();
+const emit = defineEmits();
+const open = ref(false);
+const selectedMembers = ref([]);
+const toastType = ref('');
+const propsData = defineProps({
+    isOpen: Boolean,
+})
+const form = useForm({
+    title: '',
+    description: '',
+    priority: '',
+    finishDate: null,
+    projectSlug: null,
+    groupTaskID: null,
+})
+
+const addProject = () => {
+    form.projectSlug = taskDialogStore.projectSlug;
+    form.groupTaskID = taskDialogStore.groupTaskID;
+    form.post(route('tasks.store'), {
+        onSuccess: () => {
+            toastType.value = 'success';
+            toast({
+                title: 'Task created successfuly',
+            });
+        },
+        onError: () => {
+            form.reset();
+            toastType.value = 'danger';
+            toast({
+                title: 'Something went wrong while creating task',
+            });
+        }
+    });
+}
+
+
+const bindSelectedDate = (date) => {
+    form.finishDate = date.Date;
+}
+const SelectItems = (selectedMembersFromUser) => {
+    if (!selectedMembers.value.includes(selectedMembersFromUser)) {
+        selectedMembers.value.push(selectedMembersFromUser);
+
+    } else {
+        const clickedIndex = selectedMembers.value.findIndex(item => item.value == selectedMembersFromUser.value)
+        selectedMembers.value.splice(clickedIndex, 1);
+    }
+}
+const isSelectedAboveTwo = computed(() => {
+    return selectedMembers.value.length >= 4;
+})
+
+const CloseDialog = () => {
+    closeDialog(emit);
+}
+const closeOnEscape = (e) => {
+    if (e.key === 'Escape') {
+        closeDialog(emit);
+    }
+};
+
+onMounted(() => {
+    document.addEventListener('keydown', closeOnEscape)
+});
+
+</script>

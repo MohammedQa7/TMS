@@ -46,8 +46,14 @@
     --vis-secondary-color: 160 81% 40%;
     --vis-text-color: var(--muted-foreground);
 
-    --warning-badge: 254 249 195;
-    --warning-text-badge: 133 77 14;
+    --normal-badge: 254 249 195;
+    --normal-text-badge: 133 77 14;
+
+    --urgent-badge: #fee2e2;
+    --urgent-text-badge: #991b1b;
+
+    --low-badge: #dcfce7;
+    --low-text-badge: #166534;
 
   }
 
@@ -80,8 +86,14 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9;
 
-    --warning-badge: 113 63 18;
-    --warning-text-badge: 253 224 71;
+    --normal-badge: 113 63 18;
+    --normal-text-badge: 253 224 71;
+
+    --urgent-badge: #7f1d1d;
+    --urgent-text-badge: #fca5a5;
+
+    --low-badge: #14532d;
+    --low-text-badge: #86efac;
 
   }
 }

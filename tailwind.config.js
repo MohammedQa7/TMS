@@ -57,9 +57,17 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        warningBadge: {
-          DEFAULT: "rgb(var(--warning-badge))",
-          foreground: "rgb(var(--warning-text-badge))",
+        normalBadge: {
+          DEFAULT: "rgb(var(--normal-badge))",
+          foreground: "rgb(var(--normal-text-badge))",
+        },
+        urgentBadge: {
+          DEFAULT: "var(--urgent-badge)",
+          foreground: "var(--urgent-text-badge)",
+        },
+        lowBadge: {
+          DEFAULT: "var(--low-badge)",
+          foreground: "var(--low-text-badge)",
         },
       },
       borderRadius: {

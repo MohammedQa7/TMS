@@ -1,5 +1,5 @@
 <template>
-    <div class="grid h-screen w-full pl-[56px]  overflow-x-hidden">
+    <div class="grid h-screen w-full pl-[56px] ">
         <Sidebar />
         <DashboardHeader />
         <div class="flex flex-col ">
