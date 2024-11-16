@@ -17,10 +17,10 @@ export const useTaskDialogStore = defineStore('taskDialogData', {
 
     actions: {
         getSingleTask(taskID) {
-            this.isLoading = !this.isLoading;
+            this.innerLoading = !this.innerLoading;
             if (taskID) {
                 axios.get(route('tasks.show', { task: taskID })).then((response) => {
-                    this.isLoading = !this.isLoading;
+                    this.innerLoading = !this.innerLoading;
                     this.singleTask = response.data.task;
                 }).catch((error) => {
 
@@ -28,10 +28,10 @@ export const useTaskDialogStore = defineStore('taskDialogData', {
             }
         },
         getUsersAndPrioritiesIProject(projectSlug, groupTaskID = null, taskID = null, withPriority = false) {
-            this.isLoading = !this.isLoading
+            this.innerLoading = !this.innerLoading
             axios.post(route('getProjectUsers', { projectSlug: projectSlug, withPriority: withPriority, taskID: taskID }))
                 .then((response) => {
-                    this.isLoading = !this.isLoading;
+                    this.innerLoading = !this.innerLoading;
                     this.taskPriorites = response.data.priorities;
                     this.members = response.data.members;
                     this.taskID = taskID ?? null

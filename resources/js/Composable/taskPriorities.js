@@ -1,3 +1,4 @@
+import { ArrowDown, ArrowRight, ArrowUp } from "lucide-vue-next";
 
 export function appendPriorityClass(priority, badge = false) {
     if (badge) {
@@ -15,5 +16,14 @@ export function appendPriorityClass(priority, badge = false) {
         };
         return priorityStyles[priority] ?? 'text-white';
     }
+}
 
+
+export function appendPriorityClassForTable(priority) {
+    const priorityStyles = {
+        Urgent: ArrowUp,
+        Normal: ArrowRight,
+        Low: ArrowDown,
+    };
+    return priorityStyles[priority] ?? '';
 }

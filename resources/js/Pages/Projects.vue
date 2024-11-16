@@ -111,13 +111,14 @@
                 </CardContent>
             </Card>
         </div>
-    </div>
 
+    </div>
 
 </template>
 
 
 <script setup>
+import DataTable from '@/Components/DataTable.vue';
 import CardSetting from '@/Components/site/CardSetting.vue';
 import CreateWorkspaceDialog from '@/Components/site/CreateWorkspaceDialog.vue';
 import Badge from '@/Components/ui/badge/Badge.vue';

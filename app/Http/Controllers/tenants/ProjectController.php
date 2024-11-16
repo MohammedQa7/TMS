@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectValidationRequest;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
+use App\Services\ProjectService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -55,28 +56,46 @@ class ProjectController extends Controller
         }
     }
 
-    function show(Project $project)
+    function show(Project $project, Request $request, ProjectService $projectService)
     {
 
-        $project = new ProjectResource($project->load([
-            'users',
-            'groupTasks',
-            'groupTasks.tasks' => function ($query) {
-                if ($query) {
-                    $query->orderBy('order', 'ASC');
-                }
-            },
-            'groupTasks.tasks.members',
-        ]));
-        $task_view_types = collect(TaskViewTypes::cases())->map(function ($value) {
+
+
+        if (isset($request->viewType) && $request->viewType == TaskViewTypes::LIST ->value) {
+            // LIST view (which contain all tasks in a table view)
+            $project = $projectService->retrieveTasksOnly($project, $request->viewType, $request->query());
+        } else {
+            // dd('test');
+            // BOARD View (which contain group tasks and tasks in a card way)
+            $project = new ProjectResource($project->load([
+                'users',
+                'groupTasks',
+                'groupTasks.tasks' => function ($query) {
+                    if ($query) {
+                        $query->orderBy('order', 'ASC');
+                    }
+                },
+                'groupTasks.tasks.members',
+            ]));
+        }
+
+
+        $task_view_types = collect(TaskViewTypes::cases())->mapWithKeys(function ($value) {
             return [
                 $value->name => $value->value
             ];
         });
 
+
+
         return Inertia::render('SingleProject', [
             'project' => $project,
             'taskViewTypes' => $task_view_types,
+            'selectedViewType' => match ($request->viewType) {
+                TaskViewTypes::LIST ->value => $request->viewType,
+                TaskViewTypes::TABLE->value => $request->viewType,
+                default => TaskViewTypes::TABLE->value,
+            },
         ]);
     }
 

@@ -1,5 +1,5 @@
 <template>
-    <div v-if="taskDialogStore.isLoading" class="loading-indicator flex justify-center items-center">
+    <div v-if="taskDialogStore.innerLoading" class="loading-indicator flex justify-center items-center">
         <Loader2 class="size-9 animate-spin text-center" />
     </div>
     <Tabs v-else v-model="currentTab" :default-value="currentTab" class="w-full">

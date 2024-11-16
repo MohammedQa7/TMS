@@ -35,8 +35,14 @@ class TaskResoruce extends JsonResource
                 'lastUpdated' => $this->updated_at->format('d/m/Y'),
                 'deadline' => $this->end_date ?? null,
                 'isCompleted' => $this->is_completed,
-                'members' => collect(UserResource::collection($this->whenLoaded('members')))->take(1),
-                'membersCount' => collect(UserResource::collection($this->whenLoaded('members')))->skip(2)->count() ?? null,
+                'groupTask' => new GroupTaskResource($this->whenLoaded('groupTask')),
+                'chat' => new ChatResource($this->whenLoaded('chat')),
+                'members' => $this->whenLoaded('members', function () {
+                    return collect(UserResource::collection($this->whenLoaded('members')))->take(3);
+                }),
+                'membersCount' => $this->whenLoaded('members', function () {
+                    return collect(UserResource::collection($this->whenLoaded('members')))->skip(2)->count() ?? null;
+                }),
             ];
         }
     }

@@ -29,8 +29,19 @@ class Task extends Model
         return $this->belongsToMany(User::class, 'task_users');
     }
 
+    function chat()
+    {
+        return $this->hasOne(Chat::class);
+    }
+
 
     // SCOPES
 
-    
+    function scopeFilter($query, $filter)
+    {
+        return $query->where('title', 'LIKE', '%' . $filter . '%');
+    }
+
+
+
 }

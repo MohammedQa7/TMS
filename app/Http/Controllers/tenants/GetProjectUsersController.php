@@ -21,6 +21,7 @@ class GetProjectUsersController extends Controller
         if ($project) {
             $users = User::
                 getProjectUsers($project)
+                ->with('tasks')
                 ->when($request->taskID, function ($query) use ($request) {
                     $query->getUsersWithoutTasks($request->taskID);
                 })

@@ -50,6 +50,7 @@ Route::middleware([
         Route::resource('/task/group', GroupTasksController::class)->names('groupTask');
 
 
+        Route::post('message/send', [TaskController::class, 'sendMessage'])->name('send-message');
         // End points routes (no related to a specfic component or controller "only invokable")
 
         // getting all users inside the tenant
@@ -58,8 +59,6 @@ Route::middleware([
         Route::post('project/users', GetProjectUsersController::class)->name('getProjectUsers');
         // getting all users for specific task
         Route::post('task/users', GetTaskUsersController::class)->name('getTaskUsers');
-
-
 
     });
 

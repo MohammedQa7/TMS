@@ -6,14 +6,33 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\TaskUpdateValidationRequest;
 use App\Http\Requests\TaskValidationRequest;
 use App\Http\Resources\TaskResoruce;
+use App\Models\Message;
 use App\Models\Project;
 use App\Models\Task;
 use App\Services\TaskOrderingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class TaskController extends Controller
 {
+
+    function index(Request $request)
+    {
+        $currentProject = Project::where('slug', $request->projectSLUG)->first();
+        $tasks = Task::with('groupTask', 'members')
+            ->when($request->filter, function ($query) use ($request) {
+                $query->where('title', 'LIKE', "%{$request->filter['search']}%");
+            })
+            ->when($currentProject, function ($query) use ($currentProject) {
+                $query->where('project_id', $currentProject->id);
+            })
+            ->get();
+        return response()->json([
+            'tasks' => TaskResoruce::collection($tasks),
+        ]);
+    }
+
 
     function store(TaskValidationRequest $request)
     {
@@ -51,7 +70,7 @@ class TaskController extends Controller
     {
 
         sleep(1);
-        $task->load('members');
+        $task->load('members', 'chat.messages.user');
         return response()->json([
             'task' => new TaskResoruce($task),
         ]);
@@ -83,5 +102,17 @@ class TaskController extends Controller
                 throw $th;
             }
         }
+    }
+
+
+    function sendMessage(Request $request)
+    {
+        $message = Message::create([
+            'chat_id' => $request->chat,
+            'user_id' => auth()->id(),
+            'message' => $request->message,
+        ]);
+
+        return $message;
     }
 }

@@ -6,10 +6,10 @@
                 <DialogTitle>Create Task</DialogTitle>
             </DialogHeader>
             <!-- Main Content -->
-            <div v-if="taskDialogStore.isLoading" class="loading-indicator flex justify-center items-center">
+            <div v-if="taskDialogStore.innerLoading" class="loading-indicator flex justify-center items-center">
                 <Loader2 class="size-9 animate-spin text-center" />
             </div>
-            <form v-if="!taskDialogStore.isLoading" @submit.prevent="addProject" class="space-y-5">
+            <form v-else @submit.prevent="addProject" class="space-y-5">
                 <div class="creation-fields space-y-5">
                     <div class="grid gap-2">
                         <Label for="subject">Name</Label>
@@ -189,6 +189,7 @@ const addProject = () => {
     form.post(route('tasks.store'), {
         onSuccess: () => {
             toastType.value = 'success';
+            form.reset();
             toast({
                 title: 'Task created successfuly',
             });

@@ -78,8 +78,9 @@ class User extends Authenticatable
     }
     function scopegetUsersWithoutTasks($query, $task_id)
     {
-        return $query->whereHas('tasks', function ($query) use ($task_id) {
-            $query->whereNot('task_id', $task_id);
+        return $query->whereDoesntHave('tasks', function ($query) use ($task_id) {
+            return $query->where('task_id', $task_id);
         });
+
     }
 }

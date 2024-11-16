@@ -28,10 +28,7 @@
                                     src="../../../../public/Assets/images/testimage.png" alt="test">
                                 <div class="flex flex-col items-start">
                                     <span>{{ user.name }}</span>
-                                    <span class="text-xs text-muted-foreground">{{ user.email }}
-                                        .
-                                        Junior Laravel
-                                        Developer</span>
+                                    <span class="text-xs text-muted-foreground">{{ user.email }}</span>
                                 </div>
                             </div>
                             <Check v-show="selectedMembers.includes(user)" class="size-4" />
@@ -46,7 +43,6 @@
 <script setup>
 import Button from '../ui/button/Button.vue';
 import { Check } from 'lucide-vue-next';
-import Label from '../ui/label/Label.vue';
 import Popover from '../ui/popover/Popover.vue';
 import PopoverTrigger from '../ui/popover/PopoverTrigger.vue';
 import Badge from '../ui/badge/Badge.vue';

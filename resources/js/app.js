@@ -7,6 +7,10 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 
+// Floating Vue
+import FloatingVue from 'floating-vue';
+import 'floating-vue/dist/style.css'
+
 // PINIA STORE
 import { createPinia } from 'pinia'
 const pinia = createPinia()
@@ -26,6 +30,7 @@ createInertiaApp({
             .use(plugin)
             .use(ZiggyVue)
             .use(pinia)
+            .use(FloatingVue)
             .component('Link', Link)
             .component('Head', Head)
             .mount(el);

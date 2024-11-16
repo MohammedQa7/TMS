@@ -20,7 +20,7 @@
                     </div>
                 </Button>
             </DialogHeader>
-            <div v-if="taskDialogStore.isLoading" class="loading-indicator flex justify-center items-center">
+            <div v-if="taskDialogStore.innerLoading" class="loading-indicator flex justify-center items-center">
                 <Loader2 class="size-9 animate-spin text-center" />
             </div>
             <div v-else class="grid grid-cols-12 gap-4 ">
@@ -56,16 +56,96 @@
                             </div>
                         </div>
                         <!-- Task activites and comments -->
-                        <div class="task-activity flex flex-col justify-center items-start gap-2">
+                        <div class="task-activity flex flex-col  gap-2">
                             <div class="flex justify-start items-center">
                                 <Kanban class="size-6" />
                                 <h1 class="text-2xl font-extrabold">Task activity</h1>
                             </div>
-                            <Textarea placeholder="Write a comment...." />
-                        </div>
+                            <Mentionable :keys="['@']" :items="taskDialogStore.singleTask?.members" offset="50"
+                                class="w-full">
+                                <Textarea v-model="text" />
+                                <template #no-result>
+                                    <div class="px-6 py-3">No result</div>
+                                </template>
+                                <template #item-@="{ item }">
+                                    <div class="px-16 py-1 user">
+                                        <div>
+                                            {{ item.value }}
+                                        </div>
+                                    </div>
+                                </template>
+                            </Mentionable>
+                            <div>
+                                <Button @click.prevent="send">
+                                    <Send />
+                                </Button>
+                            </div>
 
+                            <div class="mt-5 chat-messages space-y-6">
+                                <div v-for="(message, index) in formatedMentionMessages" :key="index"
+                                    class="user-info flex items-start gap-2">
+                                    <div
+                                        class="avatar flex justify-center items-center w-12 h-12 rounded-full overflow-hidden border">
+                                        <img v-if="message.sender.profilePhoto" class="w-full h-full object-cover"
+                                            :src="message.sender.profilePhoto" alt="">
+                                        <div v-else
+                                            class=" rounded-full size-8 flex justify-center items-center  bg-muted">
+                                            <UserCircle2 />
+                                        </div>
+                                    </div>
+                                    <div class="info">
+                                        <HoverCard :open="openOnHover.message == message.id ? openOnHover.open : false">
+                                            <HoverCardTrigger>
+
+                                            </HoverCardTrigger>
+                                            <HoverCardContent class="w-80" :side="'right'">
+                                                <div v-if="!isNull(hoveredUser)" class="flex justify-start space-x-4">
+                                                    <Avatar>
+                                                        <AvatarImage :src="hoveredUser.profilePhoto" />
+                                                        <AvatarFallback>
+                                                            <UserCircle2 />
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <div class="space-y-1">
+                                                        <h4 class="text-sm font-semibold">
+                                                            @{{ hoveredUser.name }}
+                                                        </h4>
+                                                        <p v-if="hoveredUser.description" class="text-sm">
+                                                            {{ hoveredUser.description }}
+                                                        </p>
+                                                        <p v-else class="text-sm">
+                                                            Doesn't have a bio, but we know he/she is great.
+                                                        </p>
+                                                        <div class="flex items-center pt-2">
+                                                            <CalendarIcon class="mr-2 h-4 w-4 opacity-70" />
+                                                            <span class="text-xs text-muted-foreground">
+                                                                Joined {{ hoveredUser.joinedAt }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div v-else class="flex justify-between space-x-4">
+                                                    <div class="space-y-1">
+                                                        <h4 class="text-sm font-semibold ">
+                                                            No information was found about that user.
+                                                        </h4>
+                                                    </div>
+                                                </div>
+                                            </HoverCardContent>
+                                        </HoverCard>
+                                        <h1>{{ message.sender.name }}</h1>
+                                        <p class="text-xs mb-2">{{ message.createdAt }}</p>
+                                        <Card class="max-w-96 p-4" v-html="message.message"></Card>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
+
                 </div>
+
+
 
                 <!-- Right Side Details -->
                 <div class="col-span-3 space-y-5 pe-6">
@@ -209,9 +289,9 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog'
 import { closeDialog } from '@/Composable/closeDialog';
-import { Check, FileStack, Kanban, Loader2, StickyNote, Text, UserCircle2, X } from 'lucide-vue-next';
+import { CalendarIcon, Check, FileStack, Kanban, Loader2, Send, StickyNote, Text, UserCircle2, X } from 'lucide-vue-next';
 import { DialogClose } from 'radix-vue';
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed, nextTick } from 'vue';
 import { useEditor, EditorContent } from '@tiptap/vue-3';
 import StarterKit from '@tiptap/starter-kit';
 import Button from '../ui/button/Button.vue';
@@ -224,12 +304,76 @@ import { useTaskDialogStore } from '@/store/TaskDialogStore';
 import { appendPriorityClass } from '@/Composable/taskPriorities';
 import Badge from '../ui/badge/Badge.vue';
 import TooltipComponent from '../TooltipComponent.vue';
-import { router, useForm } from '@inertiajs/vue3';
+import { router, useForm, usePage } from '@inertiajs/vue3';
+import { Mentionable } from 'vue-mention';
+import HoverCard from '../ui/hover-card/HoverCard.vue';
+import HoverCardTrigger from '../ui/hover-card/HoverCardTrigger.vue';
+import HoverCardContent from '../ui/hover-card/HoverCardContent.vue';
+import { isNull } from 'lodash';
+import AvatarImage from '../ui/avatar/AvatarImage.vue';
+import AvatarFallback from '../ui/avatar/AvatarFallback.vue';
+import Avatar from '../ui/avatar/Avatar.vue';
+import axios from 'axios';
 const taskDialogStore = useTaskDialogStore();
 const emit = defineEmits();
+const page = usePage();
+const openOnHover = ref({
+    open: false,
+    message: null,
+})
+const hoveredUser = ref(null);
 const propsData = defineProps({
     isOpen: Boolean,
 });
+const text = ref('');
+
+
+const formatedMentionMessages = ref();
+watch(() => taskDialogStore?.singleTask, (value) => {
+    if (value.chat) {
+        const updatedMessages = value.chat.messages.map((messageObj) => {
+            const regex = /@([a-zA-Z0-9_]+)/g;
+            const formattedMessage = messageObj.message.replace(regex, (match, username) => {
+                return `<span 
+                id="${messageObj.id}"
+                data-username="${username}"
+                class="mention underline cursor-pointer">
+                ${match}
+            </span>`
+            });
+
+            return { ...messageObj, message: formattedMessage };
+        });
+
+        formatedMentionMessages.value = updatedMessages;
+    }
+
+}, { deep: true });
+
+// Message Send Request
+const messageObject = ref({});
+const send = () => {
+    axios.post(route('send-message'), {
+        chat: taskDialogStore.singleTask.chat.id,
+        message: text.value
+    }).then((response) => {
+        messageObject.value = {
+            id: response.data.id,
+            message: response.data.message,
+            createdAt: 'now',
+            sender: {
+                id: page.props.auth.user.id,
+                name: page.props.auth.user.name,
+                profilePhoto: page.props.auth.user.profile_photo_url,
+            }
+        }
+        taskDialogStore.singleTask.chat.messages.push(messageObject.value);
+    }).catch((error) => {
+
+    });
+}
+
+
 
 const heading = ref();
 const editor = useEditor({
@@ -293,7 +437,26 @@ const closeOnEscape = (e) => {
         closeDialog(emit);
     }
 };
+const handleHoveringCardUserDetails = (event) => {
+    if (event.target && event.target.classList.contains('mention')) {
+        const username = event.target.dataset.username;
+
+        // Showing a small dialog above the hovered name
+        openOnHover.value.message = event.target.id;
+        openOnHover.value.open = !openOnHover.value.open;
+
+        //  getting the data of the hovered name from pinia store
+        hoveredUser.value = taskDialogStore.singleTask.members.find((user) => user.name == username);
+    } else {
+        openOnHover.value.message = null;
+        openOnHover.value.open = false;
+    }
+};
 onMounted(() => {
+    // nextTick => after we modified the data that needs to be displayed and before the html or DOM beign loaded the code below will be excuted.
+    nextTick(() => {
+        document.addEventListener('mouseover', handleHoveringCardUserDetails);
+    })
     document.addEventListener('keydown', closeOnEscape);
     JSON.parse(JSON.stringify(taskDialogStore.singleTask))
 });

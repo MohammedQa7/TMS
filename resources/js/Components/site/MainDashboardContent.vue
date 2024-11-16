@@ -221,10 +221,29 @@
                         </Card>
                     </template>
                 </draggableComponent>
+
+
             </div>
         </div>
     </div>
+    <Mentionable :keys="['@']" :items="users" offset="1">
+        <textarea v-model="text" />
 
+        <template #no-result>
+            <div class="dim">
+                No result
+            </div>
+        </template>
+
+        <template #item-@="{ item }">
+            <div class="user ">
+                {{ item.value }}
+                <span class="dim">
+                    ({{ item.firstName }})
+                </span>
+            </div>
+        </template>
+    </Mentionable>
 </template>
 <script setup lang="ts">
 import { Badge } from '@/components/ui/badge'
@@ -237,6 +256,23 @@ import RecentProjects from './RecentProjects.vue'
 import BarCharts from './BarCharts.vue'
 import { computed, reactive, ref } from 'vue'
 import draggableComponent from 'vuedraggable'
+import { Mentionable } from 'vue-mention'
+
+const text = ref('');
+const users = [
+    {
+        value: 'akryum',
+        firstName: 'Guillaume',
+    },
+    {
+        value: 'posva',
+        firstName: 'Eduardo',
+    },
+    {
+        value: 'atinux',
+        firstName: 'Sébastien',
+    },
+]
 
 
 const lists = reactive([
@@ -274,6 +310,9 @@ const test22 = (event) => {
 </script>
 
 <style>
+
+
+
 .button {
     margin-top: 35px;
 }

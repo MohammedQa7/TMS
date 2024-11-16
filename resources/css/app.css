@@ -111,3 +111,14 @@
     @apply bg-background text-foreground;
   }
 }
+
+.mention-item {
+  padding: 4px 10px;
+  border-radius: 4px;
+  color: black;
+}
+
+.mention-selected {
+  background-color: hsl(var(--muted-foreground));
+  color: white;
+}
