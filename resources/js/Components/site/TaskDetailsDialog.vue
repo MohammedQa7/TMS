@@ -48,6 +48,11 @@
                                     </div>
                                 </div>
                             </div>
+
+
+                            <!-- Task Checklists -->
+                            <TaskChecklistsComponent />
+
                             <!-- Task Attachments -->
                             <div class="task-name flex justify-start items-center gap-2">
                                 <FileStack class="size-6" />
@@ -61,15 +66,18 @@
                                 <Kanban class="size-6" />
                                 <h1 class="text-2xl font-extrabold">Task activity</h1>
                             </div>
-                            <Mentionable :keys="['@']" :items="taskDialogStore.singleTask?.members" offset="50"
-                                class="w-full">
+                            <Mentionable :keys="['@']" :items="taskDialogStore.singleTask?.members" :autoHide="false">
                                 <Textarea v-model="text" />
                                 <template #no-result>
                                     <div class="px-6 py-3">No result</div>
                                 </template>
                                 <template #item-@="{ item }">
-                                    <div class="px-16 py-1 user">
-                                        <div>
+                                    <div class="flex justify-start items-center gap-3 px-6">
+                                        <div class="avatar w-12 h-12">
+                                            <img class="w-full h-full object-cover rounded-full border"
+                                                src="../../../../public/Assets/images/testimage.png" alt="">
+                                        </div>
+                                        <div class="username">
                                             {{ item.value }}
                                         </div>
                                     </div>
@@ -88,9 +96,13 @@
                                         class="avatar flex justify-center items-center w-12 h-12 rounded-full overflow-hidden border">
                                         <img v-if="message.sender.profilePhoto" class="w-full h-full object-cover"
                                             :src="message.sender.profilePhoto" alt="">
-                                        <div v-else
+                                        <div v-else-if="!message.isLog"
                                             class=" rounded-full size-8 flex justify-center items-center  bg-muted">
                                             <UserCircle2 />
+                                        </div>
+                                        <div v-else
+                                            class=" rounded-full size-8 flex justify-center items-center  bg-muted">
+                                            <Info />
                                         </div>
                                     </div>
                                     <div class="info">
@@ -99,7 +111,7 @@
 
                                             </HoverCardTrigger>
                                             <HoverCardContent class="w-80" :side="'right'">
-                                                <div v-if="!isNull(hoveredUser)" class="flex justify-start space-x-4">
+                                                <div v-if="hoveredUser" class="flex justify-start space-x-4">
                                                     <Avatar>
                                                         <AvatarImage :src="hoveredUser.profilePhoto" />
                                                         <AvatarFallback>
@@ -133,9 +145,15 @@
                                                 </div>
                                             </HoverCardContent>
                                         </HoverCard>
-                                        <h1>{{ message.sender.name }}</h1>
-                                        <p class="text-xs mb-2">{{ message.createdAt }}</p>
-                                        <Card class="max-w-96 p-4" v-html="message.message"></Card>
+                                        <div v-if="!message.isLog">
+                                            <h1>{{ message.sender.name }}</h1>
+                                            <p class="text-xs mb-2">{{ message.createdAt }}</p>
+                                            <Card class="max-w-96 p-4" v-html="message.message"></Card>
+                                        </div>
+                                        <div v-else>
+                                            <p class="text-xs mb-2">{{ message.createdAt }}</p>
+                                            <Card class="max-w-96 p-4" v-html="message.message"></Card>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -263,6 +281,7 @@
                             </div>
                         </CardContent>
                     </Card>
+                    <CreateCheckListComponent />
                 </div>
             </div>
             <DialogFooter class="p-6 pt-0">
@@ -289,7 +308,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog'
 import { closeDialog } from '@/Composable/closeDialog';
-import { CalendarIcon, Check, FileStack, Kanban, Loader2, Send, StickyNote, Text, UserCircle2, X } from 'lucide-vue-next';
+import { CalendarIcon, Check, CheckCircle, CheckIcon, FileStack, Info, Kanban, ListCheck, ListChecksIcon, Loader2, Send, StickyNote, Text, UserCircle2, X } from 'lucide-vue-next';
 import { DialogClose } from 'radix-vue';
 import { ref, onMounted, watch, computed, nextTick } from 'vue';
 import { useEditor, EditorContent } from '@tiptap/vue-3';
@@ -314,6 +333,13 @@ import AvatarImage from '../ui/avatar/AvatarImage.vue';
 import AvatarFallback from '../ui/avatar/AvatarFallback.vue';
 import Avatar from '../ui/avatar/Avatar.vue';
 import axios from 'axios';
+import Popover from '../ui/popover/Popover.vue';
+import PopoverTrigger from '../ui/popover/PopoverTrigger.vue';
+import PopoverContent from '../ui/popover/PopoverContent.vue';
+import Input from '../ui/input/Input.vue';
+import CreateCheckListComponent from './CreateCheckListComponent.vue';
+import Checkbox from '../ui/checkbox/Checkbox.vue';
+import TaskChecklistsComponent from './TaskChecklistsComponent.vue';
 const taskDialogStore = useTaskDialogStore();
 const emit = defineEmits();
 const page = usePage();
@@ -447,6 +473,8 @@ const handleHoveringCardUserDetails = (event) => {
 
         //  getting the data of the hovered name from pinia store
         hoveredUser.value = taskDialogStore.singleTask.members.find((user) => user.name == username);
+        console.log(hoveredUser);
+
     } else {
         openOnHover.value.message = null;
         openOnHover.value.open = false;

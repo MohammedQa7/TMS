@@ -13,6 +13,8 @@ use App\Http\Controllers\tenants\GetProjectUsersController;
 use App\Http\Controllers\tenants\TaskController;
 use App\Http\Controllers\tenants\GroupTasksController;
 use App\Http\Controllers\tenants\GetTaskUsersController;
+use App\Http\Controllers\tenants\TaskChecklistController;
+use App\Http\Controllers\tenants\ChecklistItemsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,6 +50,7 @@ Route::middleware([
         Route::resource('/tasks', TaskController::class)->names('tasks');
         // GroupTask
         Route::resource('/task/group', GroupTasksController::class)->names('groupTask');
+        Route::resource('/task/checklist', GroupTasksController::class)->names('groupTask');
 
 
         Route::post('message/send', [TaskController::class, 'sendMessage'])->name('send-message');
@@ -58,8 +61,13 @@ Route::middleware([
         // getting all users for specific project
         Route::post('project/users', GetProjectUsersController::class)->name('getProjectUsers');
         // getting all users for specific task
-        Route::post('task/users', GetTaskUsersController::class)->name('getTaskUsers');
+        Route::resource('task/checklist', TaskChecklistController::class)->names('task-checklist'); // naming should be consistent 'this is a note to change them later'
+        Route::resource('checklist/item', ChecklistItemsController::class)->names('checklist-item'); // naming should be consistent 'this is a note to change them later'
 
+
+        Route::get('/test', function () {
+            return Inertia::render('test');
+        });
     });
 
     require __DIR__ . '/auth.php';

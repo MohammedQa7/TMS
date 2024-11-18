@@ -117,7 +117,7 @@
                                                     class="rounded-full size-8 flex justify-center items-center bg-background">
                                                     <p class="text-sm text-primary">{{
                                                         element.membersCount
-                                                    }}
+                                                        }}
                                                     </p>
                                                     <Plus class="size-3 text-primary" />
                                                 </div>
@@ -209,6 +209,7 @@ const isGroupTaskToggled = computed(() => {
 
 // Drag options
 const drag = ref(false);
+const draggedElement = ref({});
 const dragOptions = computed(() => {
     return {
         animation: 200,
@@ -217,6 +218,15 @@ const dragOptions = computed(() => {
         ghostClass: "ghost"
     };
 })
+
+const changeTaskOrder = (event) => {
+    if (event.moved) {
+        draggedElement.value = event.moved.element;
+    } else if (event.removed) {
+        draggedElement.value = event.removed.element;
+    }
+
+}
 
 // to track the final state of the items that have been traged. and the ability to control from where to what div they have changed to
 const endTaskOrder = (event) => {
@@ -235,10 +245,10 @@ const endTaskOrder = (event) => {
                 taskArray.push(object);
             });
 
-            axios.put(route('groupTask.update', {
-                group: groupTask.id,
+            axios.put(route('groupTask.update', { group: groupTask.id, }), {
+                draggedElement: draggedElement.value,
                 newOrder: taskArray,
-            }))
+            })
 
         }
     } else if (event.from.id != event.to.id) {
@@ -255,11 +265,11 @@ const endTaskOrder = (event) => {
                 taskArray.push(object);
             });
 
-            axios.put(route('groupTask.update', {
-                group: groupTask.id,
+            axios.put(route('groupTask.update', { group: groupTask.id, }), {
+                draggedElement: draggedElement.value,
                 newGroup: groupTask.id,
                 newOrder: taskArray,
-            }));
+            });
         }
     }
 }

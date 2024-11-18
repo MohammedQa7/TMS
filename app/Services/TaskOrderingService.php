@@ -2,20 +2,29 @@
 
 namespace App\Services;
 
+
 use App\Models\Task;
 
 
 class TaskOrderingService
 {
+    protected TaskLogMessages $taskLogMessages;
+    function __construct(TaskLogMessages $taskLogMessages)
+    {
+        $this->taskLogMessages = $taskLogMessages;
+    }
+
     function changeTaskOrder($new_task_order)
     {
         if (isArrayNull($new_task_order)) {
-
             foreach ($new_task_order as $single_task) {
-                Task::where('id', $single_task['taskID'])->update([
+                $task = Task::where('id', $single_task['taskID'])->first();
+                $task->update([
                     'order' => $single_task['newIndex'],
                 ]);
             }
+
+
         }
         // if (isArrayNull($dragged_element, $replaced_element)) {
         //     $dragged_task = Task::where('id', $dragged_element['elementID'])->first();
@@ -31,15 +40,19 @@ class TaskOrderingService
         // }
     }
 
-    function changeTaskOrderAndGroupTask($new_task_order, $new_group)
+    function changeTaskOrderAndGroupTask($new_task_order, $new_group, $dragged_element)
     {
         if (isArrayNull($new_task_order)) {
             foreach ($new_task_order as $single_task) {
-                Task::where('id', $single_task['taskID'])->update([
+                $task = Task::where('id', $single_task['taskID'])->first();
+                $task->update([
                     'group_task_id' => $new_group->id,
                     'order' => $single_task['newIndex'],
                 ]);
             }
+
+            $message = \App\Enums\TaskLogMessages::GROUP_CHANGED->value . '<strong>' . $new_group->title . '</strong>' . ' ' . 'by: ';
+            $this->taskLogMessages->logTaskChanges($dragged_element, $message);
         }
         // if (!is_null($request->newOrder)) {
         //     try {

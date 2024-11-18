@@ -36,6 +36,7 @@ class TaskResoruce extends JsonResource
                 'deadline' => $this->end_date ?? null,
                 'isCompleted' => $this->is_completed,
                 'groupTask' => new GroupTaskResource($this->whenLoaded('groupTask')),
+                'checklists' => ChecklistResource::collection($this->whenLoaded('checklists')),
                 'chat' => new ChatResource($this->whenLoaded('chat')),
                 'members' => $this->whenLoaded('members', function () {
                     return collect(UserResource::collection($this->whenLoaded('members')))->take(3);

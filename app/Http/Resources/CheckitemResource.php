@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class MessageResource extends JsonResource
+class CheckitemResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,9 +16,8 @@ class MessageResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'sender' => new UserResource($this->whenLoaded('user')),
-            'message' => $this->message,
-            'isLog' => $this->is_log,
+            'title' => $this->title,
+            'isCompleted' => $this->is_completed,
             'createdAt' => $this->created_at->diffForHumans(),
         ];
     }

@@ -34,6 +34,11 @@ class Task extends Model
         return $this->hasOne(Chat::class);
     }
 
+    function checklists()
+    {
+        return $this->hasMany(Checklists::class);
+    }
+
 
     // SCOPES
 

@@ -9,6 +9,9 @@
             <Card class="xl:col-span-2">
                 <BarCharts />
             </Card>
+            <Card class="xl:col-span-2">
+                <LineChart />
+            </Card>
 
             <RecentProjects />
 
@@ -257,6 +260,7 @@ import BarCharts from './BarCharts.vue'
 import { computed, reactive, ref } from 'vue'
 import draggableComponent from 'vuedraggable'
 import { Mentionable } from 'vue-mention'
+import LineChart from './LineChart.vue'
 
 const text = ref('');
 const users = [
@@ -310,9 +314,6 @@ const test22 = (event) => {
 </script>
 
 <style>
-
-
-
 .button {
     margin-top: 35px;
 }

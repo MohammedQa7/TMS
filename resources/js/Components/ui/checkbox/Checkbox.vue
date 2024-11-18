@@ -22,6 +22,7 @@ const props = defineProps({
 });
 const emits = defineEmits(['update:checked']);
 
+
 const delegatedProps = computed(() => {
   const { class: _, ...delegated } = props;
 
@@ -41,11 +42,12 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
       )
     "
   >
+
+  <Check v-if="checked" class="h-4 w-4" />
     <CheckboxIndicator
       class="flex h-full w-full items-center justify-center text-current"
     >
       <slot>
-        <Check class="h-4 w-4" />
       </slot>
     </CheckboxIndicator>
   </CheckboxRoot>

@@ -119,6 +119,6 @@
 }
 
 .mention-selected {
-  background-color: hsl(var(--muted-foreground));
-  color: white;
+  background-color: hsl(var(--primary-foreground));
+  color: hsl(var(--primary));
 }

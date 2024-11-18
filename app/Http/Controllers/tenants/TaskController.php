@@ -70,7 +70,7 @@ class TaskController extends Controller
     {
 
         sleep(1);
-        $task->load('members', 'chat.messages.user');
+        $task->load('members', 'checklists.items', 'chat.messages.user');
         return response()->json([
             'task' => new TaskResoruce($task),
         ]);
@@ -85,7 +85,7 @@ class TaskController extends Controller
                 DB::beginTransaction();
                 $task->update(array_filter([
                     'title' => $request->title,
-                    'description' => $request->title,
+                    'description' => $request->description,
                     'priority' => $request->priority,
                     'end_date' => $request->finishDate,
                     'is_completed' => $request->isCompleted,
@@ -101,6 +101,8 @@ class TaskController extends Controller
                 DB::rollBack();
                 throw $th;
             }
+
+
         }
     }
 

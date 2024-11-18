@@ -17,11 +17,10 @@ class GroupTasksController extends Controller
     function update($groupTask, Request $request, TaskOrderingService $taskOrderingService)
     {
         $new_group = GroupTask::where('id', $request->newGroup)->first();
-
         if ($new_group) {
-            $taskOrderingService->changeTaskOrderAndGroupTask($request->newOrder, $new_group);
 
-
+            $taskOrderingService->changeTaskOrderAndGroupTask($request->newOrder, $new_group, $request->draggedElement);
+            
         } else if ($groupTask) {
             if ($request->newOrder) {
                 $taskOrderingService->changeTaskOrder($request->newOrder);
