@@ -122,3 +122,11 @@
   background-color: hsl(var(--primary-foreground));
   color: hsl(var(--primary));
 }
+
+.filepond--panel .filepond--panel-root {
+  background: transparent !important;
+}
+
+.filepond--drop-label {
+  color: hsl(var(--muted-foreground)) !important;
+}

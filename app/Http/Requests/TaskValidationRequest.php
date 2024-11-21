@@ -28,6 +28,10 @@ class TaskValidationRequest extends FormRequest
             'finishDate' => 'nullable',
             'projectSlug' => 'required|exists:projects,slug',
             'groupTaskID' => 'required|exists:group_tasks,id',
+            'selectedMembers' => 'nullable|array',
+            'selectedMembers.*.id' => 'required|exists:users,id',
+            'attachments' => 'nullable|array',
+            'attachments.*.path' => 'required',
         ];
     }
 }

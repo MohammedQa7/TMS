@@ -47,7 +47,6 @@ const submit = () => {
         </div>
 
         <form @submit.prevent="submit">
-            <Card class="w-full max-w-sm">
                 <CardHeader>
                     <CardTitle class="text-2xl">
                         Login
@@ -79,7 +78,7 @@ const submit = () => {
                         Sign in
                     </Button>
                 </CardFooter>
-            </Card>
+
         </form>
     </GuestLayout>
 </template>

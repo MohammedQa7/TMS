@@ -35,7 +35,7 @@ watch((value), () => {
     <Popover>
         <PopoverTrigger as-child>
             <Button variant="outline" :class="cn(
-                'flex flex-wrap justify-start text-left h-auto',
+                'flex flex-wrap justify-start text-left h-auto w-full',
                 !value && 'text-muted-foreground',
             )">
                 <CalendarIcon class="mr-2 h-4 w-4" />

@@ -39,6 +39,11 @@ class Task extends Model
         return $this->hasMany(Checklists::class);
     }
 
+    function attachments()
+    {
+        return $this->hasMany(Attachment::class);
+    }
+
 
     // SCOPES
 

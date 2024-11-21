@@ -39,12 +39,12 @@ class ProjectResource extends JsonResource
             unset($additionalData['filter']['viewType']);
 
             // Loading the tasks relationship from project then appending the query string using appends() so we can get all the query string while we navigate from one page to another
-
             $tasks = $this->tasks()
                 ->when(isset($additionalData['filter']['search']), function ($query) use ($additionalData) {
                     $query->where('title', 'LIKE', "%{$additionalData['filter']['search']}%");
                 })
-                ->paginate(4)->appends(request()->query());
+                ->paginate(1)
+                ->appends(request()->query());
 
 
             $resourceArray['tasks'] = TaskResoruce::collection($tasks)->response()->getData(true); // Add the key-value pair directly

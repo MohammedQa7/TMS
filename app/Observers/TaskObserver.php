@@ -4,6 +4,8 @@ namespace App\Observers;
 
 use App\Models\Chat;
 use App\Models\Task;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TaskObserver
 {
@@ -12,7 +14,32 @@ class TaskObserver
      */
     public function created(Task $task): void
     {
-        $task->chat()->create();
+        try {
+            DB::beginTransaction();
+            $task->chat()->create();
+            if (request()->get('selectedMembers')) {
+                foreach (request()->get('selectedMembers') as $single_member) {
+                    $task->members()->attach($single_member['id']);
+                }
+            }
+
+            if (request()->get('attachments')) {
+                foreach (request()->get('attachments') as $single_attachment) {
+                    $task->attachments()->create([
+                        'path' => $single_attachment['path'],
+                        'original_name' => $single_attachment['original_name'],
+                    ]);
+                }
+            }
+
+
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
+
+
     }
 
     /**

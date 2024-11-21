@@ -58,6 +58,8 @@ class TaskController extends Controller
                         'order' => $highest_order,
                     ]);
                 }
+
+              
                 DB::commit();
             } catch (\Throwable $th) {
                 DB::rollBack();
@@ -70,7 +72,7 @@ class TaskController extends Controller
     {
 
         sleep(1);
-        $task->load('members', 'checklists.items', 'chat.messages.user');
+        $task->load('members', 'attachments', 'checklists.items', 'chat.messages.user');
         return response()->json([
             'task' => new TaskResoruce($task),
         ]);

@@ -22,6 +22,7 @@ class UserResource extends JsonResource
                 'name' => $this->name,
                 'email' => $this->email,
                 'profilePhoto' => $this->profile_photo_url,
+                'permissions' => [],
             ];
         } else {
             // Return only 'name' for the edit page
@@ -31,7 +32,7 @@ class UserResource extends JsonResource
                 'value' => $this->name,
                 // this is the same as name but for vue-mention library (in order to let vue-mention get the username data)
                 'email' => $this->email,
-                'description' => Str::limit($this->description , 100),
+                'description' => Str::limit($this->description, 100),
                 'profilePhoto' => $this->profile_photo_url,
                 'joinedAt' => $this->created_at->format('m Y'),
             ];

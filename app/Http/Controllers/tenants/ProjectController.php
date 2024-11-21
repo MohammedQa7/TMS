@@ -27,13 +27,14 @@ class ProjectController extends Controller
     function store(ProjectValidationRequest $request)
     {
 
+        $rand = '-' . rand(1, 9999);
         if ($request->validated()) {
             try {
                 DB::beginTransaction();
                 $project = Project::create([
                     'user_id' => auth()->id(),
                     'name' => $request->name,
-                    'slug' => GlobalHelper::slug_ar($request->name),
+                    'slug' => GlobalHelper::slug_ar($request->name) . $rand,
                     'description' => $request->description,
                     'budget' => $request->budget,
                     'start_date' => $request->startDate,
@@ -109,7 +110,7 @@ class ProjectController extends Controller
 
     }
 
-    function delete()
+    function delete(Project $project)
     {
 
     }

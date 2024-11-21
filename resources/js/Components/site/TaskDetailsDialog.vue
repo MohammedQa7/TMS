@@ -54,10 +54,14 @@
                             <TaskChecklistsComponent />
 
                             <!-- Task Attachments -->
-                            <div class="task-name flex justify-start items-center gap-2">
-                                <FileStack class="size-6" />
-                                <h1 class="text-2xl font-extrabold">Attachments</h1>
-                                <!-- <Input type="text" placeholder="task name" class=" h-12" /> -->
+                            <div class="task-attach ">
+                                <div class="flex justify-start items-center gap-2">
+                                    <FileStack class="size-6" />
+                                    <h1 class="text-2xl font-extrabold">Attachments</h1>
+                                </div>
+
+                                <TaskAttachmentsComponent />
+
                             </div>
                         </div>
                         <!-- Task activites and comments -->
@@ -308,7 +312,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog'
 import { closeDialog } from '@/Composable/closeDialog';
-import { CalendarIcon, Check, CheckCircle, CheckIcon, FileStack, Info, Kanban, ListCheck, ListChecksIcon, Loader2, Send, StickyNote, Text, UserCircle2, X } from 'lucide-vue-next';
+import { CalendarIcon, Check, FileStack, Info, Kanban, Loader2, Send, StickyNote, Text, UserCircle2, X } from 'lucide-vue-next';
 import { DialogClose } from 'radix-vue';
 import { ref, onMounted, watch, computed, nextTick } from 'vue';
 import { useEditor, EditorContent } from '@tiptap/vue-3';
@@ -323,23 +327,18 @@ import { useTaskDialogStore } from '@/store/TaskDialogStore';
 import { appendPriorityClass } from '@/Composable/taskPriorities';
 import Badge from '../ui/badge/Badge.vue';
 import TooltipComponent from '../TooltipComponent.vue';
-import { router, useForm, usePage } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import { Mentionable } from 'vue-mention';
 import HoverCard from '../ui/hover-card/HoverCard.vue';
 import HoverCardTrigger from '../ui/hover-card/HoverCardTrigger.vue';
 import HoverCardContent from '../ui/hover-card/HoverCardContent.vue';
-import { isNull } from 'lodash';
 import AvatarImage from '../ui/avatar/AvatarImage.vue';
 import AvatarFallback from '../ui/avatar/AvatarFallback.vue';
 import Avatar from '../ui/avatar/Avatar.vue';
 import axios from 'axios';
-import Popover from '../ui/popover/Popover.vue';
-import PopoverTrigger from '../ui/popover/PopoverTrigger.vue';
-import PopoverContent from '../ui/popover/PopoverContent.vue';
-import Input from '../ui/input/Input.vue';
 import CreateCheckListComponent from './CreateCheckListComponent.vue';
-import Checkbox from '../ui/checkbox/Checkbox.vue';
 import TaskChecklistsComponent from './TaskChecklistsComponent.vue';
+import TaskAttachmentsComponent from './TaskAttachmentsComponent.vue';
 const taskDialogStore = useTaskDialogStore();
 const emit = defineEmits();
 const page = usePage();

@@ -20,6 +20,7 @@
                     <div class="grid gap-2">
                         <Label for="subject">Name</Label>
                         <Input v-model="form.name" id="subject" placeholder="I need help with..." />
+                        <InputError :message="form.errors.name" />
                     </div>
                     <div class="grid gap-2">
                         <Label for="description">Description</Label>
@@ -30,16 +31,18 @@
                         <div class="grid col-span-2 gap-2">
                             <Label for="area">Due date</Label>
                             <RangeDatePicker @bindDate="bindSelectedDates" />
+                            <InputError :message="form.errors.startDate" />
+                            <InputError :message="form.errors.endDate" />
                         </div>
-                        <div class="grid col-span-1 gap-2">
+                        <div>
                             <Label for="security-level">Estimated budget</Label>
                             <Drawer>
                                 <DrawerTrigger>
                                     <Button type="button" variant="outline" :class="cn(
-                                        'flex  justify-start text-left h-auto',
+                                        'flex  justify-start text-left h-auto w-full',
                                         !form.budget && 'text-muted-foreground',
                                     )">
-                                        <DollarSign class="mr-2 h-4 w-4" />
+                                        <DollarSign class="h-4 w-4" />
                                         <template v-if="form.budget > 0">
                                             {{ form.budget }}
                                         </template>
@@ -178,14 +181,16 @@ import DrawerFooter from '../ui/drawer/DrawerFooter.vue';
 import { Toaster } from '../ui/toast';
 import { useToast } from '../ui/toast';
 import { computed, ref, watch } from 'vue';
-import { router, useForm } from '@inertiajs/vue3';
+import { router, useForm, usePage } from '@inertiajs/vue3';
 import RangeDatePicker from './RangeDatePicker.vue';
 import axios from 'axios';
 import UserMultiSelect from './UserMultiSelect.vue';
+import InputError from '../InputError.vue';
 const { toast } = useToast();
 const isLoading = ref(false);
 const budget = ref(0);
 const open = ref(false);
+const page = usePage();
 const users = ref([null]);
 const propsData = defineProps({
     text: null,
@@ -196,7 +201,7 @@ const form = useForm({
     budget: 0,
     startDate: null,
     endDate: null,
-    assignedMembers: [null],
+    assignedMembers: [],
 })
 
 const bindSelectedDates = (date) => {

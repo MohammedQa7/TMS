@@ -1,7 +1,7 @@
 <template>
     <Toaster :type="toastType" />
     <Dialog :open="isOpen">
-        <DialogContent :hideCloseButton="true">
+        <DialogContent :hideCloseButton="true" class="max-h-[90dvh] overflow-y-auto">
             <DialogHeader>
                 <DialogTitle>Create Task</DialogTitle>
             </DialogHeader>
@@ -9,11 +9,12 @@
             <div v-if="taskDialogStore.innerLoading" class="loading-indicator flex justify-center items-center">
                 <Loader2 class="size-9 animate-spin text-center" />
             </div>
-            <form v-else @submit.prevent="addProject" class="space-y-5">
+            <form v-else @submit.prevent="addTask" class="space-y-5">
                 <div class="creation-fields space-y-5">
                     <div class="grid gap-2">
                         <Label for="subject">Name</Label>
                         <Input v-model="form.title" id="subject" placeholder="I need help with..." />
+                        <InputError :message="form.errors.title" />
                     </div>
                     <div class="grid gap-2">
                         <Label for="description">Description</Label>
@@ -21,12 +22,13 @@
                             placeholder="Please include all information relevant to your issue." />
                     </div>
                     <div class="grid grid-cols-4 gap-4">
-                        <div class="grid col-span-2 gap-2">
+                        <div class=" col-span-2 space-y-2">
                             <Label for="area">Estimated deadline</Label>
                             <CalendarPickerComponent @bindDate="bindSelectedDate" />
+
                         </div>
 
-                        <div class="grid col-span-2 gap-2">
+                        <div class=" col-span-2 space-y-2">
                             <Label for="area">Priority</Label>
                             <Popover v-model:open="open">
                                 <PopoverTrigger as-child>
@@ -70,6 +72,31 @@
                                     </Command>
                                 </PopoverContent>
                             </Popover>
+                            <InputError :message="form.errors.priority" />
+                        </div>
+                    </div>
+
+                    <div class="grid gap-2">
+                        <div class="attachments">
+                            <Label class="mb-2">Attachments (Optional)</Label>
+                            <!-- FilePond -->
+                            <Card>
+
+                                <file-pond class="h-full" name="attachments" ref="filepond" class-name="my-pond" allow-multiple="true"
+                                    label-idle="Drag & Drop Or Click to Upload" v-bind:files="myFiles"
+                                    v-on:init="handleFilePondInit" :server="{
+                                        url: '',
+                                        process: {
+                                            url: '/attachment/upload',
+                                            method: 'post',
+                                            onload: handleMultipleFilePondLoad,
+                                        },
+                                        revert: handleMultipleFilePondRevert,
+                                        headers: {
+                                            'X-CSRF-TOKEN': $page.props.csrf
+                                        }
+                                    }" />
+                            </Card>
                         </div>
                     </div>
 
@@ -80,38 +107,90 @@
                                 <Button variant="outline" size="sm" class=" w-auto justify-between items-center flex">
                                     <p>+ Assign members </p>
                                     <div class="flex  justify-center items-center">
-                                        <Badge v-for="(selectedItems, index) in selectedMembers" :key="index"
+                                        <Badge v-for="(selectedItems, index) in form.selectedMembers" :key="index"
                                             variant="ghost" v-if="!isSelectedAboveTwo" class="ms-2">
                                             {{ selectedItems.name }}</Badge>
 
                                         <Badge v-else class="ms-2">
-                                            {{ selectedMembers.length }} selected</Badge>
+                                            {{ form.selectedMembers.length }} selected</Badge>
                                     </div>
                                 </Button>
                             </PopoverTrigger>
 
-                            <PopoverContent class="p-0 max-w-[460px] w-[460px]" side="bottom">
+                            <PopoverContent class="p-0 w-[100%]" side="bottom">
                                 <Command>
                                     <CommandInput placeholder="search by name..." />
                                     <CommandList>
                                         <CommandEmpty>No results found.</CommandEmpty>
                                         <CommandGroup>
-                                            <CommandItem v-for="member in taskDialogStore.members" :key="member.name"
-                                                :value="member.name" @select="SelectItems(member)" class="flex justify-between
-                                            items-center" :class="{ 'bg-muted': selectedMembers.includes(member) }">
-                                                <div class="members-details flex items-center gap-2">
-                                                    <img class="rounded-full size-8 object-cover"
-                                                        src="../../../../public/Assets/images/testimage.png" alt="test">
-                                                    <div class="flex flex-col items-start">
-                                                        <span>{{ member.name }}</span>
-                                                        <span class="text-xs text-muted-foreground">{{ member.email }}
-                                                            .
-                                                            Junior Laravel
-                                                            Developer</span>
-                                                    </div>
+                                            <div v-for="member in taskDialogStore.members" :key="member.name"
+                                                class="grid grid-cols-12 gap-4">
+                                                <div class=" col-span-9">
+                                                    <CommandItem :value="member.name" @select="SelectItems(member)"
+                                                        class="flex  justify-between
+                                            items-center"
+                                                        :class="{ 'bg-muted': form.selectedMembers.includes(member) }">
+                                                        <div class="members-details flex items-center gap-2">
+                                                            <img class="rounded-full size-8 object-cover"
+                                                                src="../../../../public/Assets/images/testimage.png"
+                                                                alt="test">
+                                                            <div class="flex flex-col items-start">
+                                                                <span>{{ member.name }}</span>
+                                                                <span class="text-xs text-muted-foreground">{{
+                                                                    member.email
+                                                                    }}
+                                                                    {{ member.role ?? 'none' }}</span>
+                                                            </div>
+                                                        </div>
+                                                        <Check v-show="form.selectedMembers.includes(member)"
+                                                            class="size-4" />
+
+                                                    </CommandItem>
                                                 </div>
-                                                <Check v-show="selectedMembers.includes(member)" class="size-4" />
-                                            </CommandItem>
+                                                <div class="col-span-3 flex justify-center items-center">
+                                                    <Popover>
+                                                        <PopoverTrigger as-child>
+                                                            <Button variant="outline" size="sm"
+                                                                class=" w-auto justify-between items-center flex">
+                                                                <p>Permissions </p>
+                                                                <div class="flex  justify-center items-center">
+                                                                    <Badge v-if="member.permissions.length > 0"
+                                                                        class="ms-2">
+                                                                        {{ member.permissions.length }} selected
+                                                                    </Badge>
+                                                                </div>
+                                                            </Button>
+                                                        </PopoverTrigger>
+
+                                                        <PopoverContent class="p-0 " side="bottom">
+                                                            <Command>
+                                                                <CommandList>
+                                                                    <CommandEmpty>No results found.</CommandEmpty>
+                                                                    <CommandGroup>
+                                                                        <div v-for="permission in permissions"
+                                                                            :key="permission.name">
+                                                                            <CommandItem :value="permission.name"
+                                                                                @select="SelectRoles(member, permission.name)"
+                                                                                class="flex justify-between items-center"
+                                                                                :class="{ 'bg-muted': member.permissions.includes(permission.name) }">
+                                                                                <div
+                                                                                    class="members-details flex items-center gap-2">
+                                                                                    <div
+                                                                                        class="flex flex-col items-start">
+                                                                                        <span>{{ permission.name
+                                                                                            }}</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </CommandItem>
+                                                                        </div>
+                                                                    </CommandGroup>
+                                                                </CommandList>
+                                                            </Command>
+                                                        </PopoverContent>
+                                                    </Popover>
+                                                </div>
+                                            </div>
+
                                         </CommandGroup>
                                     </CommandList>
                                 </Command>
@@ -121,7 +200,7 @@
 
                 </div>
                 <DialogFooter>
-                    <Button type="submit" :disabled="form.processing"> Save changes </Button>
+                    <Button type="submit" :disabled="form.processing"> Create </Button>
                 </DialogFooter>
             </form>
             <DialogClose @click.prevent="CloseDialog"
@@ -134,6 +213,10 @@
 </template>
 
 <script setup>
+import vueFilePond from 'vue-filepond';
+import FilePondPluginImagePreview from 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.esm.js';
+import 'filepond/dist/filepond.min.css';
+import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
 import {
     Dialog,
     DialogContent,
@@ -157,7 +240,7 @@ import { closeDialog } from '@/Composable/closeDialog';
 import { Toaster } from '../ui/toast';
 import { useToast } from '../ui/toast';
 import { ref, onMounted, computed } from 'vue';
-import { useForm } from '@inertiajs/vue3';
+import { router, useForm } from '@inertiajs/vue3';
 import CalendarPickerComponent from './CalendarPickerComponent.vue';
 import { DialogClose } from 'radix-vue';
 import { appendPriorityClass } from '@/Composable/taskPriorities';
@@ -165,11 +248,15 @@ import CommandInput from '../ui/command/CommandInput.vue';
 import CommandEmpty from '../ui/command/CommandEmpty.vue';
 import Badge from '../ui/badge/Badge.vue';
 import { useTaskDialogStore } from '@/store/TaskDialogStore';
+import InputError from '../InputError.vue';
+import Card from '../ui/card/Card.vue';
 const taskDialogStore = useTaskDialogStore();
+const FilePond = vueFilePond(FilePondPluginImagePreview);
+const filepond = ref();
+const myFiles = ref([]);
 const { toast } = useToast();
 const emit = defineEmits();
 const open = ref(false);
-const selectedMembers = ref([]);
 const toastType = ref('');
 const propsData = defineProps({
     isOpen: Boolean,
@@ -181,15 +268,24 @@ const form = useForm({
     finishDate: null,
     projectSlug: null,
     groupTaskID: null,
+    attachments: [],
+    selectedMembers: [],
 })
+const permissions = ref([
+    { name: 'edit' },
+    { name: 'delete' },
+    { name: 'new' },
+])
 
-const addProject = () => {
+const addTask = () => {
     form.projectSlug = taskDialogStore.projectSlug;
     form.groupTaskID = taskDialogStore.groupTaskID;
     form.post(route('tasks.store'), {
         onSuccess: () => {
             toastType.value = 'success';
             form.reset();
+            filepond.value.removeFiles();
+            myFiles.value = [];
             toast({
                 title: 'Task created successfuly',
             });
@@ -205,20 +301,56 @@ const addProject = () => {
 }
 
 
+
+//  filepond init function
+function handleFilePondInit() {
+    // example of instance method call on pond reference
+    filepond.value.getFiles();
+};
+
+// Handling multi Image load/store Filepone
+function handleMultipleFilePondLoad(response) {
+    response = JSON.parse(response);
+
+    form.attachments.push(response);
+    return response;
+}
+
+// Handling multi Image Revert Filepone
+function handleMultipleFilePondRevert(attachment, load, error) {
+
+    form.attachments = form.attachments.filter((attach) => attach.path !== attachment.path);
+    router.post(route('attachment-revert'), {
+        attachments_path: attachment.path
+    });
+}
+
+
+
 const bindSelectedDate = (date) => {
     form.finishDate = date.Date;
 }
-const SelectItems = (selectedMembersFromUser) => {
-    if (!selectedMembers.value.includes(selectedMembersFromUser)) {
-        selectedMembers.value.push(selectedMembersFromUser);
 
+const SelectItems = (selectedMembersFromUser) => {
+    if (!form.selectedMembers.includes(selectedMembersFromUser)) {
+        form.selectedMembers.push(selectedMembersFromUser);
     } else {
-        const clickedIndex = selectedMembers.value.findIndex(item => item.value == selectedMembersFromUser.value)
-        selectedMembers.value.splice(clickedIndex, 1);
+        const clickedIndex = form.selectedMembers.findIndex(item => item == selectedMembersFromUser)
+        form.selectedMembers.splice(clickedIndex, 1);
+    }
+}
+
+const SelectRoles = (member, role) => {
+    if (!member?.permissions?.includes(role)) {
+        member.permissions.push(role);
+    } else {
+        const clickedIndex = member.permissions.findIndex(item => item == role)
+        member.permissions.splice(clickedIndex, 1);
     }
 }
 const isSelectedAboveTwo = computed(() => {
-    return selectedMembers.value.length >= 4;
+
+    return form.selectedMembers.length >= 2;
 })
 
 const CloseDialog = () => {

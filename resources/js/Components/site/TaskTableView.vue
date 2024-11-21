@@ -21,7 +21,6 @@ import { useTaskDialogStore } from '@/store/TaskDialogStore';
 import { appendPriorityClassForTable } from '@/Composable/taskPriorities';
 import Input from '../ui/input/Input.vue';
 import { router } from '@inertiajs/vue3';
-import axios from 'axios';
 import { debounce } from 'lodash';
 import PaginationTableComponent from './PaginationTableComponent.vue';
 const taskDialogStore = useTaskDialogStore();
@@ -107,14 +106,6 @@ const filterTasks = debounce((value) => {
         preserveScroll: true,
         preserveState: true,
     });
-
-    // axios.get(route('tasks.index', { projectSLUG: propsData.projectSlug, filter: value }))
-    //     .then((response) => {
-    //         tasksArray.value = response.data.tasks;
-    //     })
-    //     .catch((error) => {
-    //         console.error('Error:', error);
-    //     });
 }, 300);
 
 watch((filter), (value) => {

@@ -15,6 +15,9 @@ use App\Http\Controllers\tenants\GroupTasksController;
 use App\Http\Controllers\tenants\GetTaskUsersController;
 use App\Http\Controllers\tenants\TaskChecklistController;
 use App\Http\Controllers\tenants\ChecklistItemsController;
+use App\Http\Controllers\tenants\UploadTemporatyAttachmentController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,6 +67,19 @@ Route::middleware([
         Route::resource('task/checklist', TaskChecklistController::class)->names('task-checklist'); // naming should be consistent 'this is a note to change them later'
         Route::resource('checklist/item', ChecklistItemsController::class)->names('checklist-item'); // naming should be consistent 'this is a note to change them later'
 
+
+        // File Uploads for Filpond
+        Route::post('/attachment/upload', [UploadTemporatyAttachmentController::class, 'upload'])->name('attachment-upload');
+        Route::post('/attachment/revert', [UploadTemporatyAttachmentController::class, 'revert'])->name('attachment-revert');
+        Route::get('/attachment/download', function (Request $request) {
+            if ($request->attachmentPath) {
+                $tenant_id = tenant('id');
+                $attachments_path = public_path("storage/tenant{$tenant_id}") . '/' . $request->attachmentPath;
+                return Response::download($attachments_path);
+            } else {
+                abort(404, 'No file were found');
+            }
+        })->name('download');
 
         Route::get('/test', function () {
             return Inertia::render('test');

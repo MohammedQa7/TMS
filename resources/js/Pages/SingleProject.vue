@@ -88,8 +88,8 @@ import AddPeopleDialog from '@/Components/site/AddPeopleDialog.vue';
 import Card from '@/Components/ui/card/Card.vue';
 import CardContent from '@/Components/ui/card/CardContent.vue';
 import MainLayout from '@/Layouts/MainLayout.vue';
-import { BetweenHorizonalEnd, CalendarClock, Check, ChevronLeft, Folders, Grid, LayoutGrid, List, Loader2, MessageSquare, Plus, Table, TableProperties, UserCircle2, UserPlus, X } from 'lucide-vue-next';
-import { ref, computed, watch } from 'vue';
+import { ChevronLeft, LayoutGrid, Loader2, TableProperties, UserCircle2 } from 'lucide-vue-next';
+import { ref, watch } from 'vue';
 import { fomratDate } from '@/Composable/formatDate';
 import TooltipComponent from '@/Components/TooltipComponent.vue';
 import { cloneDeep } from 'lodash';
@@ -100,7 +100,6 @@ import TabsContent from '@/Components/ui/tabs/TabsContent.vue';
 import TaskTableView from '@/Components/site/TaskTableView.vue';
 import DraggbleTasks from '@/Components/site/DraggbleTasks.vue';
 import { router } from '@inertiajs/vue3';
-import axios from 'axios';
 import { useTaskDialogStore } from '@/store/TaskDialogStore';
 const taskDialogStore = useTaskDialogStore();
 const propsData = defineProps({

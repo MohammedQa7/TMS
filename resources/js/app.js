@@ -7,6 +7,10 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 
+// FILEPOND
+import * as FilePond from 'filepond';
+import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 // Floating Vue
 import FloatingVue from 'floating-vue';
 import 'floating-vue/dist/style.css'
@@ -14,8 +18,7 @@ import 'floating-vue/dist/style.css'
 // PINIA STORE
 import { createPinia } from 'pinia'
 const pinia = createPinia()
-
-
+FilePond.registerPlugin(FilePondPluginImagePreview);
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({

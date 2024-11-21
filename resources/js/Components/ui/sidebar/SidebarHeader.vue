@@ -7,7 +7,7 @@ const props = defineProps<{
 }>()
 
 import { useSidebar } from './utils'
-const {  state } = useSidebar()
+const {  state } = useSidebar();
 </script>
 
 <template>
