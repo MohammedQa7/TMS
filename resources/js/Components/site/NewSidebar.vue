@@ -220,10 +220,12 @@ const data = {
                                     </DropdownMenuItem>
                                 </DropdownMenuGroup>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem>
+                                <Link :href="route('logout')" class="!cursor-pointer w-full" method="post" as="button">
+                                <DropdownMenuItem class="cursor-pointer">
                                     <LogOut />
                                     Log out
                                 </DropdownMenuItem>
+                                </Link>
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </SidebarMenuItem>
@@ -234,12 +236,12 @@ const data = {
                     <SidebarGroupLabel>Platform</SidebarGroupLabel>
                     <SidebarMenu>
                         <SidebarMenuItem v-for="(item, index) in data.navDashboard" :key="index">
+                            <Link :href="item.url">
                             <SidebarMenuButton :tooltip="item.title">
-                                <Link :href="item.url">
                                 <component class="size-4" :is="item.icon" />
-                            </Link>
-                            <span>{{ item.title }}</span>
+                                <span>{{ item.title }}</span>
                             </SidebarMenuButton>
+                            </Link>
                         </SidebarMenuItem>
                         <Collapsible v-for="item in data.navMain" :key="item.title" as-child
                             :default-open="item.isActive" class="group/collapsible">

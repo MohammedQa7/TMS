@@ -10,15 +10,20 @@ import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 // FILEPOND
 import * as FilePond from 'filepond';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+import FilePondPluginImageEdit from 'filepond-plugin-image-edit';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
+import 'filepond-plugin-image-edit/dist/filepond-plugin-image-edit.css';
+import '@pqina/pintura/pintura.css';
+
 // Floating Vue
 import FloatingVue from 'floating-vue';
 import 'floating-vue/dist/style.css'
 
 // PINIA STORE
 import { createPinia } from 'pinia'
+import Echo from 'laravel-echo';
 const pinia = createPinia()
-FilePond.registerPlugin(FilePondPluginImagePreview);
+FilePond.registerPlugin(FilePondPluginImagePreview, FilePondPluginImageEdit);
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
@@ -42,3 +47,5 @@ createInertiaApp({
         color: '#4B5563',
     },
 });
+
+

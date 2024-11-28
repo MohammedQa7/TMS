@@ -45,6 +45,12 @@ class Task extends Model
     }
 
 
+
+    // Methods
+    function IsUserInTask($member_id)
+    {
+        return $this->members()->where('user_id', $member_id)->exists();
+    }
     // SCOPES
 
     function scopeFilter($query, $filter)

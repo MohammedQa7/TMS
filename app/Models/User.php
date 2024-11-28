@@ -7,11 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use LDAP\ResultEntry;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles ;
 
     /**
      * The attributes that are mass assignable.
@@ -45,6 +47,37 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // CUSTOM ROLES AND PERMISSIONS HANDLING FOR SPECIFIC PROJECT
+    public function assignRoleWithProject($role_name, $project_id = null)
+    {
+        $role = Role::where('name', $role_name)->firstOrFail();
+
+        $this->roles()->attach($role->id, ['project_id' => $project_id]);
+    }
+    public function revokeRoleWithProject($role_name, $project_id = null)
+    {
+        $role = Role::where('name', $role_name)->firstOrFail();
+        $this->roles()
+            ->when(!is_null($project_id), function ($query) use ($project_id) {
+                $query->wherePivot('project_id', $project_id);
+            })
+            ->detach($role->id);
+    }
+    public function canForProject($permissions, $project_id)
+    {
+        return $this->roles()
+            ->wherePivot('project_id', $project_id) // Use the passed project_id
+            ->whereHas('permissions', function ($query) use ($permissions) {
+                $query->when(is_array($permissions), function ($query) use ($permissions) {
+                    $query->whereIn('name', $permissions);
+                });
+                $query->when(is_string($permissions), function ($query) use ($permissions) {
+                    $query->where('name', $permissions);
+                });
+            })
+            ->exists();
     }
 
 

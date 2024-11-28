@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\tenants;
 
+use App\Enums\PermissionsEnum;
+use App\Events\ChatEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TaskUpdateValidationRequest;
 use App\Http\Requests\TaskValidationRequest;
@@ -9,6 +11,7 @@ use App\Http\Resources\TaskResoruce;
 use App\Models\Message;
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\User;
 use App\Services\TaskOrderingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -59,7 +62,7 @@ class TaskController extends Controller
                     ]);
                 }
 
-              
+
                 DB::commit();
             } catch (\Throwable $th) {
                 DB::rollBack();
@@ -70,11 +73,16 @@ class TaskController extends Controller
 
     function show(Task $task)
     {
-
+        $permissions = collect(PermissionsEnum::cases())->mapWithKeys(function ($value) use ($task) {
+            return [
+                $value->name => auth()->user()->canForProject($value->value, $task->project_id),
+            ];
+        });
         sleep(1);
         $task->load('members', 'attachments', 'checklists.items', 'chat.messages.user');
         return response()->json([
             'task' => new TaskResoruce($task),
+            'can' => $permissions
         ]);
     }
 
@@ -95,7 +103,9 @@ class TaskController extends Controller
 
                 if ($request->selectedMembers) {
                     foreach ($request->selectedMembers as $single_member) {
-                        $task->members()->attach($single_member['id']);
+                        if (!$task->isUserInTask($single_member['id'])) {
+                            $task->members()->attach($single_member['id']);
+                        }
                     }
                 }
                 DB::commit();
@@ -111,12 +121,21 @@ class TaskController extends Controller
 
     function sendMessage(Request $request)
     {
+
         $message = Message::create([
             'chat_id' => $request->chat,
             'user_id' => auth()->id(),
             'message' => $request->message,
         ]);
 
+        broadcast(new ChatEvent($request->chat, $message, auth()->user()));
         return $message;
+    }
+
+    function removeMember(Task $task, Request $request)
+    {
+
+        $member = User::where('id', $request->query('member'))->first();
+        $task->members()->detach($member->id);
     }
 }

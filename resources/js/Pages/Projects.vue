@@ -18,7 +18,7 @@
 
         <div class="projects-cards w-full grid grid-cols-12 gap-6">
             <Card v-for="(singleProject, index) in projects.data" :key="index"
-                class=" col-span-12 md:col-span-6 lg:col-span-4">
+                class=" col-span-12 md:col-span-6 lg:col-span-4 ">
                 <CardContent class="p-4">
                     <div class="grid grid-cols-12 mb-2 gap-4 ">
                         <div class="task-basic-info flex items-center gap-2 col-span-9">
@@ -44,7 +44,9 @@
                                 {{ singleProject.name }}
                                 <HoverCard :open-delay="100">
                                     <HoverCardTrigger>
-                                        <Badge> View progress </Badge>
+                                        <Badge class="text-[12px] md:text-[10px] lg:text-xs text-center  leading-4">
+                                            View progress
+                                        </Badge>
                                     </HoverCardTrigger>
                                     <HoverCardContent class="p-6">
                                         <div class="flex items-center justify-center  overflow-hidden  rounded-full">
@@ -78,13 +80,12 @@
                             </p>
                             </Link>
                         </div>
-                        <div
-                            class="project-details flex justify-between items-center mt-4 whitespace-normal break-words ">
+                        <div class="project-details  flex-wrap mt-4 whitespace-normal break-words ">
                             <div class="task-comments">
                                 <Badge variant="secondary">
                                     <div class="flex justify-center items-center space-x-1">
                                         <DollarSign class="size-5" />
-                                        <p><span>{{ singleProject.budget }}</span> E.Budget</p>
+                                        <p><span>{{ singleProject.budget }}</span></p>
                                     </div>
                                 </Badge>
                             </div>
@@ -99,9 +100,9 @@
 
                             <div class="task-attachments">
                                 <Badge variant="secondary">
-                                    <div class="flex justify-center items-center space-x-1">
+                                    <div class="flex justify-center items-center space-x-1 ">
                                         <ListTodo class="size-5" />
-                                        <p><span>{{ singleProject.tasks ?? 0 }}</span> Tasks</p>
+                                        <p class="text-xs"><span>{{ singleProject.tasks ?? 0 }}</span> Tasks</p>
                                     </div>
                                 </Badge>
                             </div>

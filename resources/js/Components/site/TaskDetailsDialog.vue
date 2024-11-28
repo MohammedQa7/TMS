@@ -65,35 +65,40 @@
                             </div>
                         </div>
                         <!-- Task activites and comments -->
+                        <!-- v-if="taskDialogStore.can.VIEW_CHAT" -->
+                        <!--  v-if="taskDialogStore.can.SEND_MESSAGE" -->
                         <div class="task-activity flex flex-col  gap-2">
                             <div class="flex justify-start items-center">
                                 <Kanban class="size-6" />
                                 <h1 class="text-2xl font-extrabold">Task activity</h1>
                             </div>
-                            <Mentionable :keys="['@']" :items="taskDialogStore.singleTask?.members" :autoHide="false">
-                                <Textarea v-model="text" />
-                                <template #no-result>
-                                    <div class="px-6 py-3">No result</div>
-                                </template>
-                                <template #item-@="{ item }">
-                                    <div class="flex justify-start items-center gap-3 px-6">
-                                        <div class="avatar w-12 h-12">
-                                            <img class="w-full h-full object-cover rounded-full border"
-                                                src="../../../../public/Assets/images/testimage.png" alt="">
+                            <div class="message-container space-y-3">
+                                <Mentionable :keys="['@']" :items="taskDialogStore.singleTask?.members"
+                                    :autoHide="false">
+                                    <Textarea v-model="text" />
+                                    <template #no-result>
+                                        <div class="px-6 py-3">No result</div>
+                                    </template>
+                                    <template #item-@="{ item }">
+                                        <div class="flex justify-start items-center gap-3 px-6">
+                                            <div class="avatar w-12 h-12">
+                                                <img class="w-full h-full object-cover rounded-full border"
+                                                    src="../../../../public/Assets/images/testimage.png" alt="">
+                                            </div>
+                                            <div class="username">
+                                                {{ item.value }}
+                                            </div>
                                         </div>
-                                        <div class="username">
-                                            {{ item.value }}
-                                        </div>
-                                    </div>
-                                </template>
-                            </Mentionable>
-                            <div>
-                                <Button @click.prevent="send">
-                                    <Send />
-                                </Button>
+                                    </template>
+                                </Mentionable>
+                                <div>
+                                    <Button @click.prevent="send">
+                                        <Send />
+                                    </Button>
+                                </div>
                             </div>
 
-                            <div class="mt-5 chat-messages space-y-6">
+                            <div class="mt-5 flex flex-col-reverse chat-messages space-y-6">
                                 <div v-for="(message, index) in formatedMentionMessages" :key="index"
                                     class="user-info flex items-start gap-2">
                                     <div
@@ -339,6 +344,7 @@ import axios from 'axios';
 import CreateCheckListComponent from './CreateCheckListComponent.vue';
 import TaskChecklistsComponent from './TaskChecklistsComponent.vue';
 import TaskAttachmentsComponent from './TaskAttachmentsComponent.vue';
+import Echo from 'laravel-echo';
 const taskDialogStore = useTaskDialogStore();
 const emit = defineEmits();
 const page = usePage();
@@ -353,6 +359,7 @@ const propsData = defineProps({
 const text = ref('');
 
 
+// Formatting message to include mentioned users and apply the hover status on the mentioned user.
 const formatedMentionMessages = ref();
 watch(() => taskDialogStore?.singleTask, (value) => {
     if (value.chat) {
@@ -382,17 +389,17 @@ const send = () => {
         chat: taskDialogStore.singleTask.chat.id,
         message: text.value
     }).then((response) => {
-        messageObject.value = {
-            id: response.data.id,
-            message: response.data.message,
-            createdAt: 'now',
-            sender: {
-                id: page.props.auth.user.id,
-                name: page.props.auth.user.name,
-                profilePhoto: page.props.auth.user.profile_photo_url,
-            }
-        }
-        taskDialogStore.singleTask.chat.messages.push(messageObject.value);
+        // messageObject.value = {
+        //     id: response.data.id,
+        //     message: response.data.message,
+        //     createdAt: 'now',
+        //     sender: {
+        //         id: page.props.auth.user.id,
+        //         name: page.props.auth.user.name,
+        //         profilePhoto: page.props.auth.user.profile_photo_url,
+        //     }
+        // }
+        // taskDialogStore.singleTask.chat.messages.push(messageObject.value);
     }).catch((error) => {
 
     });
@@ -415,6 +422,23 @@ watch(() => taskDialogStore?.singleTask?.description, (value) => {
     if (value) {
         editor.value.commands.setContent(value);
     }
+
+    // Listen to chat event when the single task is ready to use "the single task has been recived from the backend and loaded in the DOM"
+    window.Echo.private(`liveChat.${taskDialogStore.singleTask.chat.id}`).listen('ChatEvent', (eventData) => {
+        console.log(eventData);
+        messageObject.value = {
+            id: eventData.senderData.id,
+            message: eventData.senderData.message,
+            createdAt: eventData.senderData.postedAt,
+            sender: {
+                id: eventData.senderData.userID,
+                name: eventData.senderData.name,
+                profilePhoto: eventData.senderData.profilePhoto,
+            }
+        }
+        taskDialogStore.singleTask.chat.messages.push(messageObject.value);
+    });
+
 });
 
 watch((heading), (value) => {
@@ -462,6 +486,8 @@ const closeOnEscape = (e) => {
         closeDialog(emit);
     }
 };
+
+// Hnadling @username hover to display user data
 const handleHoveringCardUserDetails = (event) => {
     if (event.target && event.target.classList.contains('mention')) {
         const username = event.target.dataset.username;
@@ -479,6 +505,9 @@ const handleHoveringCardUserDetails = (event) => {
         openOnHover.value.open = false;
     }
 };
+
+
+
 onMounted(() => {
     // nextTick => after we modified the data that needs to be displayed and before the html or DOM beign loaded the code below will be excuted.
     nextTick(() => {

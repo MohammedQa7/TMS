@@ -14,7 +14,7 @@
                                 <ChevronLeft class="w-4 h-4" />
                                 BACK TO PROJECTS
                                 </Link>
-                                <h1 class="text-2xl font-bold">
+                                <h1 class="text-2xl font-bold ">
                                     {{ projectCloned.name }}
                                 </h1>
                             </div>
@@ -88,7 +88,7 @@ import AddPeopleDialog from '@/Components/site/AddPeopleDialog.vue';
 import Card from '@/Components/ui/card/Card.vue';
 import CardContent from '@/Components/ui/card/CardContent.vue';
 import MainLayout from '@/Layouts/MainLayout.vue';
-import { ChevronLeft, LayoutGrid, Loader2, TableProperties, UserCircle2 } from 'lucide-vue-next';
+import { ChevronLeft, ChevronsLeftRightEllipsisIcon, LayoutGrid, Loader2, TableProperties, UserCircle2 } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import { fomratDate } from '@/Composable/formatDate';
 import TooltipComponent from '@/Components/TooltipComponent.vue';
@@ -101,6 +101,7 @@ import TaskTableView from '@/Components/site/TaskTableView.vue';
 import DraggbleTasks from '@/Components/site/DraggbleTasks.vue';
 import { router } from '@inertiajs/vue3';
 import { useTaskDialogStore } from '@/store/TaskDialogStore';
+import eventBus from '@/Composable/eventBus';
 const taskDialogStore = useTaskDialogStore();
 const propsData = defineProps({
     project: Object,
@@ -146,6 +147,8 @@ watch(currentTab, (type) => {
         });
     }
 });
+
+
 
 
 defineOptions({

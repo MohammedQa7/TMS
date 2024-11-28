@@ -12,6 +12,7 @@ export const useTaskDialogStore = defineStore('taskDialogData', {
             singleTask: null,
             isLoading: false,
             innerLoading: false,
+            can: null,
         }
     },
 
@@ -22,6 +23,7 @@ export const useTaskDialogStore = defineStore('taskDialogData', {
                 axios.get(route('tasks.show', { task: taskID })).then((response) => {
                     this.innerLoading = !this.innerLoading;
                     this.singleTask = response.data.task;
+                    this.can = response.data.can;
                 }).catch((error) => {
 
                 });
@@ -45,8 +47,8 @@ export const useTaskDialogStore = defineStore('taskDialogData', {
         getTaskUsers() {
             this.innerLoading = !this.innerLoading;
             if (this.taskID) {
-                axios.post(route('getTaskUsers', {
-                    taskID: this.taskID
+                axios.get(route('getTaskUsers', {
+                    task: this.taskID
                 }))
                     .then((response) => {
                         this.innerLoading = !this.innerLoading;

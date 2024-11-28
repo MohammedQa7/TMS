@@ -53,7 +53,7 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
-    'domain' => env('APP_DOMAIN' , 'localhost'),
+    'domain' => env('APP_DOMAIN', 'localhost'),
 
     /*
     |--------------------------------------------------------------------------
@@ -123,5 +123,6 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+
 
 ];

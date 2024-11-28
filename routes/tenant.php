@@ -5,7 +5,6 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
-use App\Models\User;
 use Inertia\Inertia;
 use App\Http\Controllers\tenants\ProjectController;
 use App\Http\Controllers\tenants\GetUsersController;
@@ -18,6 +17,7 @@ use App\Http\Controllers\tenants\ChecklistItemsController;
 use App\Http\Controllers\tenants\UploadTemporatyAttachmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -36,12 +36,16 @@ Route::middleware([
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
-    Route::get('/', function () {
-        return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
+    // Route::get('/', function () {
+    //     return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
+    // });
+
+    Route::post('/custom/auth', function (Request $request) {
+        return Broadcast::auth($request);
     });
 
     Route::middleware('auth')->group(function () {
-        Route::get('/dashboard', function () {
+        Route::get('/', function () {
             return Inertia::render('Dashboard');
         })->name('dashboard');
 
@@ -51,21 +55,30 @@ Route::middleware([
 
         // Tasks
         Route::resource('/tasks', TaskController::class)->names('tasks');
+
+        // Task external props
+        Route::resource('task/checklist', TaskChecklistController::class)->names('task-checklist'); // Task Checklists
+        Route::resource('checklist/item', ChecklistItemsController::class)->names('checklist-item');
+        Route::post('message/send', [TaskController::class, 'sendMessage'])->name('send-message'); // Task Messages (Chat)
+        Route::delete('task/remove/member/{task}', [TaskController::class, 'removeMember'])->name('remove-member-from-task'); // Rmoving a member from a teask
+
+
         // GroupTask
         Route::resource('/task/group', GroupTasksController::class)->names('groupTask');
         Route::resource('/task/checklist', GroupTasksController::class)->names('groupTask');
 
 
-        Route::post('message/send', [TaskController::class, 'sendMessage'])->name('send-message');
-        // End points routes (no related to a specfic component or controller "only invokable")
 
+        // End points routes (no related to a specfic component or controller "only invokable")
         // getting all users inside the tenant
         Route::get('get/users', GetUsersController::class)->name('getUsers');
+        // getting all users for specific task
+        Route::get('get/users/{task}', GetTaskUsersController::class)->name('getTaskUsers');
         // getting all users for specific project
         Route::post('project/users', GetProjectUsersController::class)->name('getProjectUsers');
-        // getting all users for specific task
-        Route::resource('task/checklist', TaskChecklistController::class)->names('task-checklist'); // naming should be consistent 'this is a note to change them later'
-        Route::resource('checklist/item', ChecklistItemsController::class)->names('checklist-item'); // naming should be consistent 'this is a note to change them later'
+
+
+
 
 
         // File Uploads for Filpond
@@ -81,6 +94,15 @@ Route::middleware([
             }
         })->name('download');
 
+
+
+        Route::get('/roles', function () {
+            // $user = auth()->user();
+            // $role = Role::create(['name' => 'Can View Chat']);
+            // $permission = Permission::create(['name' => PermissionsEnum::VIEW_CHAT]);
+            // $permission->assignRole($role);
+            // $user->assignRoleWithProject($role->name, 13);
+        });
         Route::get('/test', function () {
             return Inertia::render('test');
         });

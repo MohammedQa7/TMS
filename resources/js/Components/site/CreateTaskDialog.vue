@@ -82,7 +82,8 @@
                             <!-- FilePond -->
                             <Card>
 
-                                <file-pond class="h-full" name="attachments" ref="filepond" class-name="my-pond" allow-multiple="true"
+                                <file-pond class="h-full" name="attachments" ref="filepond" class-name="my-pond"
+                                    allow-multiple="true" :allow-image-edit="true"
                                     label-idle="Drag & Drop Or Click to Upload" v-bind:files="myFiles"
                                     v-on:init="handleFilePondInit" :server="{
                                         url: '',
@@ -215,8 +216,20 @@
 <script setup>
 import vueFilePond from 'vue-filepond';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.esm.js';
+import FilePondPluginImageEdit from 'filepond-plugin-image-edit/dist/filepond-plugin-image-edit.esm.js';
 import 'filepond/dist/filepond.min.css';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
+import 'filepond-plugin-image-edit/dist/filepond-plugin-image-edit.min.css';
+import 'filepond-plugin-file-poster/dist/filepond-plugin-file-poster.min.css'
+import '@pqina/pintura/pintura.css';
+import {
+    openEditor,
+    createDefaultImageReader,
+    createDefaultImageWriter,
+    processImage,
+    getEditorDefaults,
+} from '@pqina/pintura/pintura.js';
+
 import {
     Dialog,
     DialogContent,
@@ -251,7 +264,7 @@ import { useTaskDialogStore } from '@/store/TaskDialogStore';
 import InputError from '../InputError.vue';
 import Card from '../ui/card/Card.vue';
 const taskDialogStore = useTaskDialogStore();
-const FilePond = vueFilePond(FilePondPluginImagePreview);
+const FilePond = vueFilePond(FilePondPluginImagePreview, FilePondPluginImageEdit);
 const filepond = ref();
 const myFiles = ref([]);
 const { toast } = useToast();
@@ -300,14 +313,94 @@ const addTask = () => {
     });
 }
 
+const imageEditorOptions = ref({
+    allowReorder: true,
+    filePosterMaxHeight: 256,
+    // used to create the editor, receives editor configuration, should return an editor instance
+    createEditor: openEditor,
+
+    // Required, used for reading the image data
+    imageReader: [createDefaultImageReader],
+
+    // optionally. can leave out when not generating a preview thumbnail and/or output image
+    imageWriter: [
+        // The image writer to use
+        createDefaultImageWriter,
+        // optional image writer instructions, this instructs the image writer to resize the image to match a width of 384 pixels
+        {
+            targetSize: {
+                width: 128,
+            },
+        },
+
+        /* Uncomment when editing videos, remove above code
+        () =>
+            createDefaultMediaWriter(
+                // Generic Media Writer options, passed to image and video writer
+                {
+                    targetSize: {
+                        width: 400,
+                    },
+                },
+                [
+                    // For handling images
+                    createDefaultImageWriter(),
+
+                    // For handling videos
+                    createDefaultVideoWriter({
+                        // Video writer instructions here
+                        // ...
+
+                        // Encoder to use
+                        encoder: createMediaStreamEncoder({
+                            imageStateToCanvas,
+                        }),
+                    }),
+                ]
+            ),
+            */
+    ],
+
+    // used to generate poster images, runs an editor in the background
+    imageProcessor: processImage,
+
+    // Pintura Image Editor properties
+    editorOptions: {
+        // pass the editor default configuration options
+        ...getEditorDefaults({
+            /* Uncomment when editing videos
+            locale: { ...plugin_trim_locale_en_gb },
+            */
+        }),
+
+        // we want a square crop
+        imageCropAspectRatio: 1,
+    },
+
+    /* uncomment if you've used FilePond with version 6 of Pintura and are loading old file metadata
+    // map legacy data objects to new imageState objects
+    legacyDataToImageState: legacyDataToImageState,
+    */
+
+});
+
 
 
 //  filepond init function
 function handleFilePondInit() {
     // example of instance method call on pond reference
     filepond.value.getFiles();
-};
 
+    // filepond.value._pond.on('addfile', (error, file) => {
+    //     if (error) {
+    //         console.error('FilePond error:');
+    //     } else {
+
+    //     }
+    // });
+
+
+};
 // Handling multi Image load/store Filepone
 function handleMultipleFilePondLoad(response) {
     response = JSON.parse(response);

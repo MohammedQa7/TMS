@@ -4,11 +4,13 @@ namespace App\Http\Controllers\tenants;
 
 
 use App\Enums\TaskViewTypes;
+use App\Events\ChatEvent;
 use App\Helpers\GlobalHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectValidationRequest;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
+use App\Models\User;
 use App\Services\ProjectService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -59,7 +61,6 @@ class ProjectController extends Controller
 
     function show(Project $project, Request $request, ProjectService $projectService)
     {
-
 
 
         if (isset($request->viewType) && $request->viewType == TaskViewTypes::LIST ->value) {

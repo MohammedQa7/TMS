@@ -13,17 +13,15 @@ class GetTaskUsersController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(Request $request)
+    public function __invoke(Task $task)
     {
+
         sleep(1);
-        $task = Task::where('id', $request->taskID)->first();
-        if ($task) {
-            $users = User::
-                getTaskUsers($task)
-                ->get();
-            return response()->json([
-                'currentMembers' => UserResource::collection($users),
-            ]);
-        }
+        $users = User::
+            getUsersWithoutTasks($task->id)
+            ->get();
+        return response()->json([
+            'currentMembers' => UserResource::collection($users),
+        ]);
     }
 }

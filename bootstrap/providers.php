@@ -2,5 +2,6 @@
 
 return [
     App\Providers\AppServiceProvider::class,
-    App\Providers\TenancyServiceProvider::class, // <-- here
+    App\Providers\BroadcastServiceProvider::class,
+    App\Providers\TenancyServiceProvider::class,
 ];

@@ -114,27 +114,9 @@
                             </div>
 
                             <TooltipComponent :tooltip-text="'remove member from task'">
-
-                                <AlertDialog :open="true">
-                                    <AlertDialogTrigger>
-                                        <Button variant="destructive">
-                                            <MinusCircle class="size-5" />
-                                        </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                                This action cannot be undone. This will permanently delete your account
-                                                and remove your data from our servers.
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction>Continue</AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
+                                <Button @click.prevent="toggleDeleteDialog(member.id)" variant="destructive">
+                                    <MinusCircle class="size-5" />
+                                </Button>
                             </TooltipComponent>
                         </div>
                     </ScrollArea>
@@ -172,7 +154,7 @@ import {
 } from '@/components/ui/tabs'
 import ScrollArea from '../ui/scroll-area/ScrollArea.vue'
 import { CommandInput, CommandItem } from '../ui/command'
-import { Check, CheckCircle, Copy, Loader2, MinusCircle, XCircle, XCircleIcon } from 'lucide-vue-next'
+import { ChartColumnStacked, Check, CheckCircle, Copy, Loader2, MinusCircle, XCircle, XCircleIcon } from 'lucide-vue-next'
 import TooltipProvider from '../ui/tooltip/TooltipProvider.vue'
 import Tooltip from '../ui/tooltip/Tooltip.vue'
 import TooltipTrigger from '../ui/tooltip/TooltipTrigger.vue'
@@ -189,15 +171,7 @@ import Command from '../ui/command/Command.vue'
 import Separator from '../ui/separator/Separator.vue'
 import { useTaskDialogStore } from '@/store/TaskDialogStore'
 import TooltipComponent from '../TooltipComponent.vue'
-import AlertDialog from '../ui/alert-dialog/AlertDialog.vue'
-import AlertDialogTrigger from '../ui/alert-dialog/AlertDialogTrigger.vue'
-import AlertDialogContent from '../ui/alert-dialog/AlertDialogContent.vue'
-import AlertDialogHeader from '../ui/alert-dialog/AlertDialogHeader.vue'
-import AlertDialogTitle from '../ui/alert-dialog/AlertDialogTitle.vue'
-import AlertDialogFooter from '../ui/alert-dialog/AlertDialogFooter.vue'
-import AlertDialogCancel from '../ui/alert-dialog/AlertDialogCancel.vue'
-import AlertDialogAction from '../ui/alert-dialog/AlertDialogAction.vue'
-import AlertDialogDescription from '../ui/alert-dialog/AlertDialogDescription.vue'
+import eventBus from '@/Composable/eventBus'
 const emit = defineEmits();
 const taskDialogStore = useTaskDialogStore();
 const isCopied = ref(false);
@@ -230,6 +204,15 @@ watch((currentTab), (value) => {
         taskDialogStore.getTaskUsers();
     }
 })
+
+
+const toggleDeleteDialog = (member) => {
+    eventBus.emit('open-delete', {
+        route: route('remove-member-from-task', { task: taskDialogStore.taskID, member: member, }),
+        successText: 'Member was removed',
+        errorText: 'Something went wrong while removing the member',
+    },);
+}
 
 
 

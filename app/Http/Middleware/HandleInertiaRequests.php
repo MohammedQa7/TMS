@@ -7,6 +7,7 @@ use App\Http\Resources\UserResource;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Stancl\Tenancy\Facades\Tenancy;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -37,11 +38,13 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'projectsNavItems' => Project::select('name', 'slug')->get()->map(function ($project) {
-                return [
-                    'title' => $project->name,
-                    'url' => route('projects.show', $project->slug),
-                ];
+            'projectsNavItems' => when(tenancy()->tenant, function () {
+                return Project::select('name', 'slug')->get()->map(function ($project) {
+                    return [
+                        'title' => $project->name,
+                        'url' => route('projects.show', $project->slug),
+                    ];
+                });
             }),
 
             // Filepond csrf token

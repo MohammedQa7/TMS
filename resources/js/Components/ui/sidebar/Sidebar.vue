@@ -23,7 +23,7 @@ const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
     v-if="collapsible === 'none'"
     :class="
       cn(
-        'flex h-full w-[--sidebar-width] flex-col bg-sidebar text-sidebar-foreground',
+        'flex h-full w-[--sidebar-width] flex-col   text-sidebar-foreground',
         props.class,
       )
     "
@@ -41,6 +41,7 @@ const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
     <SheetContent
       data-sidebar="sidebar"
       data-mobile="true"
+      :side="side"
       class="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
       :style="{
         '--sidebar-width': SIDEBAR_WIDTH_MOBILE,

@@ -69,7 +69,12 @@ const getSelectedMembers = (membersArray) => {
 }
 
 const submit = () => {
-    form.put(route('tasks.update', { task: taskDialogStore.taskID }))
+    form.put(route('tasks.update', { task: taskDialogStore.taskID }) , {
+        onSuccess : ()=>{
+            taskDialogStore.getTaskUsers();
+            form.reset();
+        }
+    })
 }
 
 const CloseDialog = () => {
