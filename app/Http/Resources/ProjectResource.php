@@ -47,7 +47,7 @@ class ProjectResource extends JsonResource
                 ->appends(request()->query());
 
 
-            $resourceArray['tasks'] = TaskResoruce::collection($tasks)->response()->getData(true); // Add the key-value pair directly
+            $resourceArray['tasks'] = TaskResoruce::collection($tasks)->response()->getData(true); // Add the key-value pair directly for the pagination
         }
 
 

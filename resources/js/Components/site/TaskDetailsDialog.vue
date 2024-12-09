@@ -424,7 +424,7 @@ watch(() => taskDialogStore?.singleTask?.description, (value) => {
     }
 
     // Listen to chat event when the single task is ready to use "the single task has been recived from the backend and loaded in the DOM"
-    window.Echo.private(`liveChat.${taskDialogStore.singleTask.chat.id}`).listen('ChatEvent', (eventData) => {
+    window.Echo.private(`liveChat.${taskDialogStore.singleTask.chat?.id}`).listen('ChatEvent', (eventData) => {
         console.log(eventData);
         messageObject.value = {
             id: eventData.senderData.id,

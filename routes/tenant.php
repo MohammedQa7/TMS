@@ -17,6 +17,9 @@ use App\Http\Controllers\tenants\ChecklistItemsController;
 use App\Http\Controllers\tenants\UploadTemporatyAttachmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Carbon;
+use App\Models\Task;
+use App\Http\Controllers\tenants\DashboardController;
 
 
 /*
@@ -45,9 +48,7 @@ Route::middleware([
     });
 
     Route::middleware('auth')->group(function () {
-        Route::get('/', function () {
-            return Inertia::render('Dashboard');
-        })->name('dashboard');
+        Route::get('/', DashboardController::class)->name('dashboard');
 
         // Projects
         Route::resource('/projects', ProjectController::class)
@@ -65,7 +66,6 @@ Route::middleware([
 
         // GroupTask
         Route::resource('/task/group', GroupTasksController::class)->names('groupTask');
-        Route::resource('/task/checklist', GroupTasksController::class)->names('groupTask');
 
 
 

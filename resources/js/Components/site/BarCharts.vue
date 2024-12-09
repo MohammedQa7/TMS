@@ -4,27 +4,29 @@ import CardHeader from '../ui/card/CardHeader.vue';
 import CardContent from '../ui/card/CardContent.vue';
 import CardTitle from '../ui/card/CardTitle.vue';
 import Card from '../ui/card/Card.vue';
+import eventBus from '@/Composable/eventBus';
+import { ref } from 'vue';
+import CardDescription from '../ui/card/CardDescription.vue';
+const barChart = ref();
+eventBus.on('userProductivity', (data) => {
+  barChart.value = data;
+})
 
-const data = [
-  { name: 'Jan', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
-  { name: 'Feb', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
-  { name: 'Mar', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
-  { name: 'Apr', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
-  { name: 'May', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
-  { name: 'Jun', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
-  { name: 'Jul', total: Math.floor(Math.random() * 2000) + 500, predicted: Math.floor(Math.random() * 2000) + 500 },
-]
+const now = new Date();
+const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1);
+const formattedLastMonth = lastMonth.toLocaleString('default', { month: 'long' });
 </script>
 
 <template>
   <Card>
     <CardHeader>
-      <CardTitle>Recent Sales</CardTitle>
+      <CardTitle>Users Productivity</CardTitle>
+      <CardDescription>Last {{ formattedLastMonth }} </CardDescription>
     </CardHeader>
     <CardContent>
-      <BarChart index="name" :data="data" :categories="['total', 'predicted']" :y-formatter="(tick, i) => {
+      <BarChart index="username" :data="barChart" :categories="['Completed Tasks']" :y-formatter="(tick, i) => {
         return typeof tick === 'number'
-          ? `$ ${new Intl.NumberFormat('us').format(tick).toString()}`
+          ? Number.isInteger(tick) ? tick : ''
           : ''
       }" :rounded-corners="4" />
     </CardContent>

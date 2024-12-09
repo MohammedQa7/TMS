@@ -14,6 +14,7 @@ use App\Models\Task;
 use App\Models\User;
 use App\Services\TaskOrderingService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -99,6 +100,7 @@ class TaskController extends Controller
                     'priority' => $request->priority,
                     'end_date' => $request->finishDate,
                     'is_completed' => $request->isCompleted,
+                    'completed_at' => $request->isCompleted ? Carbon::now() : null,
                 ], fn($value) => !is_null($value)));
 
                 if ($request->selectedMembers) {

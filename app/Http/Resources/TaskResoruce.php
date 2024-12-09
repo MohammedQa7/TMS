@@ -17,6 +17,8 @@ class TaskResoruce extends JsonResource
     {
 
 
+        
+
         if ($request->routeIs('projects.index')) {
             return [
                 'id' => $this->id,

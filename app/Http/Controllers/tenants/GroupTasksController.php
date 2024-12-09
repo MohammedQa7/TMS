@@ -12,8 +12,6 @@ use Illuminate\Http\Request;
 class GroupTasksController extends Controller
 {
 
-
-
     function update($groupTask, Request $request, TaskOrderingService $taskOrderingService)
     {
         $new_group = GroupTask::where('id', $request->newGroup)->first();

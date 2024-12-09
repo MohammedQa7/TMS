@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" >
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     <meta charset="utf-8">
@@ -14,12 +14,11 @@
 
     <!-- Scripts -->
     @routes
-    @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
-    @inertiaHead
+    @vite(['resources/js/app.js', 'resources/css/app.css'])
 </head>
 
 <body class="font-sans antialiased !pointer-events-auto">
-    @inertia
+    {{ $slot }}
 </body>
 
 </html>

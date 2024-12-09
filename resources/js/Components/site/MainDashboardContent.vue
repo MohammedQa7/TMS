@@ -4,6 +4,10 @@
             <StatisticsCards />
         </div>
 
+        <div v-for="(test, index) in data" :key="index">
+            <h1>{{ test }}</h1>
+        </div>
+
         <div class="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
 
             <Card class="xl:col-span-2">
@@ -248,7 +252,7 @@
         </template>
     </Mentionable>
 </template>
-<script setup lang="ts">
+<script setup>
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -257,7 +261,7 @@ import { ArrowUpRight, DollarSign } from 'lucide-vue-next'
 import StatisticsCards from './StatisticsCards.vue'
 import RecentProjects from './RecentProjects.vue'
 import BarCharts from './BarCharts.vue'
-import { computed, reactive, ref } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import draggableComponent from 'vuedraggable'
 import { Mentionable } from 'vue-mention'
 import LineChart from './LineChart.vue'
@@ -311,6 +315,7 @@ const dragOptions = computed(() => {
 const test22 = (event) => {
     console.log(event);
 }
+
 </script>
 
 <style>

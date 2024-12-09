@@ -228,7 +228,7 @@ const changeTaskOrder = (event) => {
 
 }
 
-// to track the final state of the items that have been traged. and the ability to control from where to what div they have changed to
+// to track the final state of the items that have been draged. and the ability to control from where to what div they have changed to
 const endTaskOrder = (event) => {
     if (event.from.id == event.to.id && event.newIndex != event.oldIndex) {
         const groupTask = propsData.projectCloned?.groupTasks.find((group) => {
