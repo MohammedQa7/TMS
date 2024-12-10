@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Carbon;
 use App\Models\Task;
 use App\Http\Controllers\tenants\DashboardController;
+use App\Http\Controllers\tenants\ExportTasksController;
+use App\Http\Controllers\tenants\ImportTasksController;
 
 
 /*
@@ -62,8 +64,8 @@ Route::middleware([
         Route::resource('checklist/item', ChecklistItemsController::class)->names('checklist-item');
         Route::post('message/send', [TaskController::class, 'sendMessage'])->name('send-message'); // Task Messages (Chat)
         Route::delete('task/remove/member/{task}', [TaskController::class, 'removeMember'])->name('remove-member-from-task'); // Rmoving a member from a teask
-
-
+        Route::get('task/export/{project}', ExportTasksController::class)->name('export-CSV');
+        Route::put('task/import/', ImportTasksController::class)->name('import-CSV');
         // GroupTask
         Route::resource('/task/group', GroupTasksController::class)->names('groupTask');
 
@@ -93,8 +95,6 @@ Route::middleware([
                 abort(404, 'No file were found');
             }
         })->name('download');
-
-
 
         Route::get('/roles', function () {
             // $user = auth()->user();

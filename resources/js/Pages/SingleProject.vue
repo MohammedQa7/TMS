@@ -57,17 +57,26 @@
                     </CardContent>
                 </Card>
             </div>
+
+
             <Tabs v-model="currentTab" :default-value="currentTab">
-                <TabsList>
-                    <TabsTrigger :value="taskViewTypes?.TABLE">
-                        <LayoutGrid class="size-5" />
-                        Board View
-                    </TabsTrigger>
-                    <TabsTrigger :value="taskViewTypes?.LIST">
-                        <TableProperties class="size-5" />
-                        List View
-                    </TabsTrigger>
-                </TabsList>
+                <div class="tasks-tabs flex justify-between items-center">
+                    <TabsList>
+                        <TabsTrigger :value="taskViewTypes?.TABLE">
+                            <LayoutGrid class="size-5" />
+                            Board View
+                        </TabsTrigger>
+                        <TabsTrigger :value="taskViewTypes?.LIST">
+                            <TableProperties class="size-5" />
+                            List View
+                        </TabsTrigger>
+                    </TabsList>
+
+                    <div class="space-x-4">
+                        <Button @click.prevent="exportTasks"> Export as CSV</Button>
+                        <ImportTaskDialog />
+                    </div>
+                </div>
                 <TabsContent :value="taskViewTypes?.TABLE" class="flex space-x-4 overflow-y-scroll">
                     <DraggbleTasks :projectCloned="projectCloned" />
                 </TabsContent>
@@ -75,6 +84,7 @@
                     <TaskTableView :tasks="project.data.tasks" :projectSlug="project.data.slug" />
                 </TabsContent>
             </Tabs>
+
 
 
         </div>
@@ -102,6 +112,8 @@ import DraggbleTasks from '@/Components/site/DraggbleTasks.vue';
 import { router } from '@inertiajs/vue3';
 import { useTaskDialogStore } from '@/store/TaskDialogStore';
 import eventBus from '@/Composable/eventBus';
+import Button from '@/components/ui/button/Button.vue';
+import ImportTaskDialog from '@/Components/site/ImportTaskDialog.vue';
 const taskDialogStore = useTaskDialogStore();
 const propsData = defineProps({
     project: Object,
@@ -149,6 +161,12 @@ watch(currentTab, (type) => {
 });
 
 
+const exportTasks = () => {
+    // router.get(route('export-CSV'));
+    window.open(route('export-CSV', { project: propsData.project.data.slug }), '_blank');
+
+
+}
 
 
 defineOptions({
