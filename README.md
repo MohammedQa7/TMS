@@ -1,7 +1,7 @@
 
 # Project Management System
 
-Functionalities:
+### Functionalities:
 
 Ability to create private projects and track their status.
 
