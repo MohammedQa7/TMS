@@ -1,5 +1,5 @@
 
-![Screenshot 2024-11-12 at 20-32-35 Laravel](https://github.com/user-attachments/assets/2e984fbf-845f-43dd-b045-07b5c643e9a9)
+![Thumbnail](https://github.com/user-attachments/assets/b4ef3971-26c9-4bd1-b0cf-79452ea58bff)
 
 
 # Project Management System
