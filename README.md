@@ -2,47 +2,17 @@
 ![Thumbnail](https://github.com/user-attachments/assets/b4ef3971-26c9-4bd1-b0cf-79452ea58bff)
 
 
-# ERP System
-
-An all-in-one Enterprise Resource Planning (ERP) system designed to manage and streamline core business processes across various departments. Built with a modular approach, this system enhances productivity, improves communication, and enables data-driven decision-making.
+# Project Management System
 
 
-## 📁 Departments & Features
+## 🚀 Key Features
 
-### 🧾 1. Finance Department
-- Manage income and expense records
-- Track financial transactions
-- Generate financial reports
-- Invoice creation and payment tracking
-
-
-
-### 💼 2. Sales Department
-- Lead and opportunity tracking
-- Quotation and invoice generation
-- Sales order management
-- Customer relationship management (CRM) integration
-- Sales performance analytics
-
-
-
-### 📦 3. Inventory / Stock Department
-- Product and item categorization
-- Stock-in / stock-out tracking
-- Low-stock alerts
-- Purchase order management
-- Supplier records and procurement history
-
-
-
-### 🤝 4. CRM Department
-- Customer profiles and segmentation
-- Feedback and complaint handling
-
-
-### 📅 5. Calendar & Event Management
-- Company-wide calendar view
-- Event creation and notifications
+- **Projects:** Create, assign, and track progress.
+- **Tasks:** Add tasks with deadlines, priorities, and assignees.
+- **Team Management:** Role-based access for team members.
+- **Calendar:** View deadlines and events in one place.
+- **Collaboration:** Comment on tasks and upload attachments.
+- **Reports:** Visualize progress and team workload.
 
 
 ## 🚀 Setup Instructions
